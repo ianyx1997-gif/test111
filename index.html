@@ -121,7 +121,8 @@
     cursor: pointer;
     transition: background 0.2s;
   }
-  .node:hover { background: rgba(245, 158, 11, 0.08); }
+  .node:hover { background: rgba(245, 158, 11, 0.06); }
+  .node.open { background: rgba(245, 158, 11, 0.04); }
   .node-title {
     font-weight: 600;
     font-size: 0.95rem;
@@ -129,41 +130,108 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
   }
-  .node-title .arrow { color: #64748b; transition: transform 0.25s; font-size: 0.85rem; }
+  .node-title span:first-child { flex: 1; min-width: 0; }
+  .node-title .arrow { color: #64748b; transition: transform 0.25s; font-size: 0.85rem; flex-shrink: 0; }
   .node.open .arrow { transform: rotate(90deg); color: #f59e0b; }
+
   .node-content {
     display: none;
-    margin-top: 12px;
-    background: rgba(15, 23, 42, 0.8);
-    padding: 14px 16px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.05);
+    margin-top: 14px;
+    padding: 0;
+    cursor: default;
   }
-  .node.open .node-content { display: block; }
-  .node-content pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #cbd5e1;
-    margin-bottom: 12px;
-  }
-  .copy-btn {
-    background: linear-gradient(90deg, #10b981, #059669);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.25s;
+  .node.open .node-content { display: block; animation: fadeIn .18s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: translateY(0); } }
+
+  .msg-editor {
     width: 100%;
+    min-height: 160px;
+    padding: 16px 18px;
+    background: rgba(2, 6, 23, 0.75);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    color: #e8edf5;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    resize: none;
+    outline: none;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
   }
-  .copy-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
-  .copy-btn.copied { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+  .msg-editor:hover { border-color: rgba(245, 158, 11, 0.25); }
+  .msg-editor:focus {
+    border-color: rgba(245, 158, 11, 0.55);
+    background: rgba(2, 6, 23, 0.92);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+  }
+  .msg-editor.dirty { border-color: rgba(245, 158, 11, 0.45); }
+
+  .node-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .edit-tip {
+    font-size: 0.72rem;
+    color: #64748b;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .edit-tip kbd {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.68rem;
+    color: #cbd5e1;
+    font-family: inherit;
+  }
+
+  .node-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+  .btn {
+    border: 1px solid transparent;
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.86rem;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+  }
+  .btn-copy {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    min-width: 130px;
+  }
+  .btn-copy:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45); }
+  .btn-copy.copied { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4); }
+  .btn-ghost {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+  .btn-ghost:hover { color: #fbbf24; border-color: rgba(245, 158, 11, 0.45); background: rgba(245, 158, 11, 0.06); }
+  .btn-ghost:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-ghost:disabled:hover { color: #94a3b8; border-color: rgba(148, 163, 184, 0.2); background: transparent; }
 
   footer {
     max-width: 1400px;
@@ -173,6 +241,27 @@
     color: #64748b;
     font-size: 0.85rem;
     border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .conf-bar {
+    background: linear-gradient(90deg, rgba(127,29,29,0.35), rgba(127,29,29,0.15), rgba(127,29,29,0.35));
+    border-bottom: 1px solid rgba(239,68,68,0.25);
+    color: #fca5a5;
+    text-align: center;
+    padding: 6px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: -20px -20px 20px;
+  }
+  .conf-bar .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+    margin-right: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(239,68,68,0.6);
   }
 
   .toast {
@@ -199,6 +288,8 @@
 </head>
 <body>
 
+<div class="conf-bar"><span class="dot"></span>Document intern Zebra Tur · Confidențial · Uz exclusiv pentru agenți</div>
+
 <header>
   <h1>🌍 Mesaje Șablon — Agenție de Turism</h1>
   <p id="subtitle">Bibliotecă profesională de răspunsuri pentru clienți · Română / Русский</p>
@@ -216,7 +307,7 @@
 <div class="mindmap" id="mindmap"></div>
 
 <footer>
-  <p>© Agenție de Turism · Actualizat 2026 · Dă click pe o categorie → un șablon → butonul „Copiază"</p>
+  <p>© Zebra Tur · 2026 · Document intern confidențial · Șabloanele rămân intacte — modifică textul în fereastră înainte de a copia</p>
 </footer>
 
 <div class="toast" id="toast">✔ Copiat în clipboard!</div>
@@ -228,24 +319,26 @@
 const DATA = {
   ui: {
     ro: {
-      subtitle: "Bibliotecă profesională de răspunsuri pentru clienți · Română / Русский",
+      subtitle: "Bibliotecă internă Zebra Tur · Document confidențial · RO / RU",
       expand: "📂 Extinde tot",
       collapse: "📁 Restrânge tot",
       search: "🔍 Caută un șablon...",
       copy: "📋 Copiază",
       copied: "✔ Copiat!",
-      toast: "✔ Copiat în clipboard!",
-      footer: "Dă click pe o categorie → un șablon → butonul „Copiază”"
+      reset: "↺ Original",
+      tip: "Modifică direct textul (ex.: înlocuiește (nume)), apoi apasă",
+      toast: "✔ Copiat în clipboard!"
     },
     ru: {
-      subtitle: "Профессиональная библиотека ответов для клиентов · Română / Русский",
+      subtitle: "Внутренняя библиотека Zebra Tur · Конфиденциальный документ · RO / RU",
       expand: "📂 Развернуть всё",
       collapse: "📁 Свернуть всё",
       search: "🔍 Поиск шаблона...",
       copy: "📋 Копировать",
       copied: "✔ Скопировано!",
-      toast: "✔ Скопировано в буфер!",
-      footer: "Кликните по категории → шаблону → кнопке «Копировать»"
+      reset: "↺ Оригинал",
+      tip: "Редактируй текст прямо здесь (замени (имя) и т.д.), затем нажми",
+      toast: "✔ Скопировано в буфер!"
     }
   },
   categories: [
@@ -1083,7 +1176,7 @@ Bună ziua! 😊 Vacanța dumneavoastră începe mâine! Iată reminder-ul final
 Vă mulțumim că ne-ați ales pentru a vă planifica vacanța! Sunt [NUME], consultantul dumneavoastră de turism, și voi fi alături de dumneavoastră pe tot parcursul procesului — de la alegerea destinației până la întoarcerea acasă.
 
 Pentru a vă oferi cele mai bune opțiuni, vă rog să-mi spuneți:
-1️⃣ Destinația preferată (sau „să mă surprindeți"? 😉);
+1️⃣ Destinația preferată (sau „să mă surprindeți”? 😉);
 2️⃣ Perioada și durata dorită;
 3️⃣ Numărul de persoane și vârsta copiilor (dacă e cazul);
 4️⃣ Bugetul orientativ.
@@ -1354,7 +1447,7 @@ Vă rugăm să ne răspundeți în termen de [24–48h] pentru a acționa rapid 
           content: {
             ro: `🧳 Dacă bagajul nu a sosit sau e deteriorat:
 
-1️⃣ Mergeți IMEDIAT la ghișeul „Lost & Found" / „Baggage Claim" al companiei aeriene, ÎNAINTE de a părăsi zona bagajelor;
+1️⃣ Mergeți IMEDIAT la ghișeul „Lost & Found” / „Baggage Claim” al companiei aeriene, ÎNAINTE de a părăsi zona bagajelor;
 2️⃣ Completați formularul PIR (Property Irregularity Report) — primiți un cod de referință;
 3️⃣ Păstrați bonul de îmbarcare (boarding pass) și eticheta bagajului;
 4️⃣ Fotografiați starea bagajului (dacă e deteriorat);
@@ -1421,66 +1514,6 @@ Semnătura: ______________`,
 Дата: [__/__/____]
 Подпись: ______________`
           }
-        },
-        {
-          id: "bonus-regul",
-          title: { ro: "Regulament împărțire bonus (intern)", ru: "Регламент распределения бонуса (внутренний)" },
-          content: {
-            ro: `📋 REGULAMENT INTERN — ÎMPĂRȚIREA BONUSULUI PE OFERTĂ
-
-1. OFERTA RELEVANTĂ (definiție):
-   Oferta relevantă este oferta pe care turistul o rezervă efectiv.
-   Se consideră relevantă și:
-   • Oferta cu perioada modificată cu MAI PUȚIN de 14 zile față de ceea ce s-a trimis;
-   • Oferta cu tipul de cameră modificat;
-   • Oferta cu persoane adăugate / eliminate.
-
-2. NU se consideră că ai trimis oferta relevantă dacă:
-   • Rezervarea se face după MAI MULT de 14 zile de la transmiterea ofertei AND clientul alege o ofertă diferită;
-   • Ai verificat actualitatea ofertei transmise anterior și aceasta era depășită.
-
-3. REZERVARE PENTRU HOTEL TRIMIS CU PESTE 14 ZILE ÎNAINTE:
-   Dacă clientul revine după mai mult de 14 zile și alege EXACT același hotel trimis anterior:
-   → Bonus 100% agentului inițial (dacă istoricul conversației demonstrează clar că hotelul a fost propunerea sa).
-
-4. PRELUARE CERERI / OFERTĂ GĂSITĂ DE CLIENT PE SITE:
-   • Client preluat din CRM fără agent anterior → bonus integral agentului care finalizează;
-   • Client a găsit oferta singur pe site → bonus 70% agent care închide, 30% fond general;
-   • Client solicită un hotel specific de la început → 100% agent care închide.
-
-5. DISPUTE:
-   În caz de dezacord, decizia finală revine managerului de vânzări, pe baza istoricului CRM / chat.
-
-📅 Versiune: [v1.0 / DATA]
-✍️ Aprobat de: [NUME MANAGER]`,
-            ru: `📋 ВНУТРЕННИЙ РЕГЛАМЕНТ — РАСПРЕДЕЛЕНИЕ БОНУСА ПО ПРЕДЛОЖЕНИЯМ
-
-1. РЕЛЕВАНТНОЕ ПРЕДЛОЖЕНИЕ (определение):
-   Релевантное предложение — то, которое турист действительно забронировал.
-   Также считается релевантным:
-   • Предложение с изменённым сроком МЕНЕЕ чем на 14 дней от исходного;
-   • Предложение с изменённым типом номера;
-   • Предложение с добавленными / удалёнными туристами.
-
-2. НЕ считается, что агент отправил релевантное предложение, если:
-   • Бронирование происходит через БОЛЕЕ чем 14 дней с момента отправки И клиент выбрал другое предложение;
-   • Агент сверял актуальность и она была устаревшей.
-
-3. БРОНИРОВАНИЕ ОТЕЛЯ, ОТПРАВЛЕННОГО БОЛЕЕ 14 ДНЕЙ НАЗАД:
-   Если клиент возвращается более чем через 14 дней и выбирает ТОТ ЖЕ отель:
-   → 100% бонуса — первоначальному агенту (если история переписки чётко показывает его рекомендацию).
-
-4. ПЕРЕХВАТ ЗАЯВОК / ПРЕДЛОЖЕНИЕ НАЙДЕНО КЛИЕНТОМ НА САЙТЕ:
-   • Клиент без предыдущего агента в CRM → 100% агенту, закрывающему сделку;
-   • Клиент сам нашёл оффер на сайте → 70% закрывающему агенту, 30% в общий фонд;
-   • Клиент с самого начала просит конкретный отель → 100% закрывающему.
-
-5. СПОРНЫЕ СИТУАЦИИ:
-   В случае разногласий окончательное решение — за менеджером по продажам, на основе CRM и истории переписки.
-
-📅 Версия: [v1.0 / ДАТА]
-✍️ Утверждено: [ИМЯ МЕНЕДЖЕРА]`
-          }
         }
       ]
     },
@@ -1546,28 +1579,7 @@ Dacă sunteți de acord cu toate prevederile contractuale, vă rugăm să confir
       icon: "🎁",
       title: { ro: "Promoții & Fidelizare", ru: "Акции и программа лояльности" },
       nodes: [
-        {
-          id: "golden-week",
-          title: { ro: "Golden Week 2.0 — Early Booking", ru: "Golden Week 2.0 — раннее бронирование" },
-          content: {
-            ro: `😊 Vă informăm că în această perioadă este activă promoția Golden Week 2.0 la ZEBRA TUR — ultima săptămână cu prețuri minime de la hoteluri pentru Vara 2026, înainte de scumpirile din februarie.
-
-👉 Avans doar 10%, restul se achită înainte de plecare.
-👉 Cu Promocod GOLDEN26 primiți o reducere suplimentară.
-
-✅ Promoție valabilă până pe 31.01.2026 (inclusiv).
-
-Doriți să vă pregătesc o ofertă personalizată cât prețurile sunt încă cele vechi? 🌴`,
-            ru: `😊 Сообщаем вам, что в данный период действует акция Golden Week 2.0 от ZEBRA TUR — последняя неделя с минимальными ценами от отелей на лето 2026 года, до повышения цен в феврале.
-
-👉 Аванс всего 10%, остальная сумма — перед вылетом.
-👉 А с промокодом GOLDEN26 вы получаете дополнительную скидку.
-
-✅ Акция действует до 31.01.2026 (включительно).
-
-Хотите, подберу персональное предложение, пока цены ещё прежние? 🌴`
-          }
-        },
+        
         {
           id: "apel-fideli",
           title: { ro: "Apel către turiștii fideli", ru: "Звонок постоянным туристам" },
@@ -1582,38 +1594,6 @@ Când aveți câteva minute libere ca să vă contactez?`,
 Вам звонили из Zebra Tur с несколькими отличными новостями — специальная скидка для постоянных туристов, и хотелось задать пару коротких вопросов о вашем отпуске 😊
 
 Когда у вас будет пара свободных минут, чтобы я вам перезвонил(-а)?`
-          }
-        },
-        {
-          id: "grup-privat",
-          title: { ro: "Grup privat — Voucher 1000 lei", ru: "Закрытая группа — ваучер 1000 лей" },
-          content: {
-            ro: `🌞 Mulțumim mult pentru discuție!
-
-Aici este linkul despre care am vorbit:
-👉 https://zebratur.md/thx
-
-Prin acest link puteți intra în grupurile private Zebra Tur, create special pentru turiștii care au călătorit cu noi 💛
-
-În grup veți găsi:
-— Voucherul de 1000 lei reducere, valabil până la 31 ianuarie 2026;
-— Ofertele Early Booking pentru 2026 (cu avans doar 1000 lei);
-— Promoții și tombole exclusive disponibile doar pentru turiștii fideli.
-
-Accesați linkul și intrați în grupul care vă este mai comod (Viber sau Telegram) 👉 https://zebratur.md/thx`,
-            ru: `🌞 Большое спасибо за разговор!
-
-Вот ссылка, о которой мы говорили:
-👉 https://zebratur.md/thx
-
-По этой ссылке вы попадёте в закрытые группы Zebra Tur, созданные специально для туристов, которые уже путешествовали с нами 💛
-
-В группе вы найдёте:
-— Ваучер на 1000 леев скидки, действительный до 31 января 2026;
-— Предложения Early Booking на 2026 год (с авансом всего 1000 леев);
-— Акции и розыгрыши, доступные только постоянным туристам.
-
-Перейдите по ссылке и зайдите в удобную для вас группу (Viber или Telegram) 👉 https://zebratur.md/thx`
           }
         }
       ]
@@ -2117,16 +2097,27 @@ function render() {
       const nodeEl = document.createElement("div");
       nodeEl.className = "node";
       nodeEl.dataset.id = node.id;
+      const text = node.content[currentLang];
       nodeEl.innerHTML = `
         <div class="node-title">
           <span>📄 ${node.title[currentLang]}</span>
           <span class="arrow">▶</span>
         </div>
-        <div class="node-content">
-          <pre>${escapeHtml(node.content[currentLang])}</pre>
-          <button class="copy-btn" data-text="${encodeURIComponent(node.content[currentLang])}">${t.copy}</button>
+        <div class="node-content" data-node-id="${node.id}">
+          <textarea class="msg-editor" spellcheck="false"></textarea>
+          <div class="node-footer">
+            <div class="edit-tip">💡 ${t.tip} <kbd>${t.copy}</kbd></div>
+            <div class="node-actions">
+              <button class="btn btn-ghost btn-reset" title="${t.reset}" disabled>${t.reset}</button>
+              <button class="btn btn-copy">${t.copy}</button>
+            </div>
+          </div>
         </div>
       `;
+      // set the text and store original for reset
+      const ta = nodeEl.querySelector(".msg-editor");
+      ta.value = text;
+      ta.dataset.original = text;
       body.appendChild(nodeEl);
     });
     mindmap.appendChild(branch);
@@ -2135,52 +2126,98 @@ function render() {
   attachListeners();
 }
 
-function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+function autoSize(ta) {
+  ta.style.height = "auto";
+  ta.style.height = Math.max(160, Math.min(700, ta.scrollHeight + 4)) + "px";
+}
+
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta);
+  }
+  if (btn) {
+    const original = btn.innerHTML;
+    btn.innerHTML = DATA.ui[currentLang].copied;
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.classList.remove("copied");
+    }, 1500);
+  }
+  showToast();
 }
 
 function attachListeners() {
   document.querySelectorAll(".branch-header").forEach(h => {
     h.addEventListener("click", () => h.parentElement.classList.toggle("open"));
   });
-  document.querySelectorAll(".node-title").forEach(t => {
-    t.addEventListener("click", (e) => {
+
+  document.querySelectorAll(".node").forEach(nodeEl => {
+    const title = nodeEl.querySelector(".node-title");
+    const content = nodeEl.querySelector(".node-content");
+    const ta = nodeEl.querySelector(".msg-editor");
+    const copyBtn = nodeEl.querySelector(".btn-copy");
+    const resetBtn = nodeEl.querySelector(".btn-reset");
+
+    // Toggle open via title only
+    title.addEventListener("click", (e) => {
       e.stopPropagation();
-      t.parentElement.classList.toggle("open");
-    });
-  });
-  document.querySelectorAll(".copy-btn").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      const text = decodeURIComponent(btn.dataset.text);
-      try {
-        await navigator.clipboard.writeText(text);
-        const original = btn.textContent;
-        btn.textContent = DATA.ui[currentLang].copied;
-        btn.classList.add("copied");
-        showToast();
-        setTimeout(() => {
-          btn.textContent = original;
-          btn.classList.remove("copied");
-        }, 1800);
-      } catch (err) {
-        // Fallback
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        showToast();
+      const wasOpen = nodeEl.classList.contains("open");
+      nodeEl.classList.toggle("open");
+      if (!wasOpen) {
+        // size on open
+        requestAnimationFrame(() => autoSize(ta));
       }
+    });
+
+    // Don't let clicks in content bubble to title
+    content.addEventListener("click", e => e.stopPropagation());
+
+    // Auto-size on input + dirty state
+    ta.addEventListener("input", () => {
+      autoSize(ta);
+      const dirty = ta.value !== ta.dataset.original;
+      ta.classList.toggle("dirty", dirty);
+      resetBtn.disabled = !dirty;
+    });
+
+    // Copy current textarea content, then auto-reset to original template
+    copyBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      copyText(ta.value, copyBtn);
+      // Auto-reset so the next use starts clean from the template
+      ta.value = ta.dataset.original;
+      ta.classList.remove("dirty");
+      resetBtn.disabled = true;
+      autoSize(ta);
+    });
+
+    // Reset to original template (in-window only — template in DATA is untouched)
+    resetBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      ta.value = ta.dataset.original;
+      ta.classList.remove("dirty");
+      resetBtn.disabled = true;
+      autoSize(ta);
+      ta.focus();
     });
   });
 }
 
-function showToast() {
+function showToast(msg) {
   const toast = document.getElementById("toast");
+  if (msg) toast.textContent = msg;
+  else toast.textContent = DATA.ui[currentLang].toast;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1800);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1800);
 }
 
 // Language switcher
@@ -2203,7 +2240,6 @@ document.getElementById("collapseAll").addEventListener("click", () => {
   document.querySelectorAll(".branch").forEach(b => b.classList.remove("open"));
   document.querySelectorAll(".node").forEach(n => n.classList.remove("open"));
 });
-
 // Search
 document.getElementById("search").addEventListener("input", (e) => {
   const q = e.target.value.trim().toLowerCase();
