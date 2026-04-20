@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesaje Șablon — Agenție de Turism | Mind Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    min-height: 100vh;
+    color: #e2e8f0;
+    padding: 20px;
+  }
+  header {
+    max-width: 1400px;
+    margin: 0 auto 30px;
+    text-align: center;
+    padding: 30px 20px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+  }
+  header h1 {
+    font-size: 2.2rem;
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  header p { color: #94a3b8; font-size: 1rem; }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .lang-btn, .action-btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.25s ease;
+  }
+  .lang-btn.active {
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+  .lang-btn:hover, .action-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.12); }
+  .search-box {
+    margin-top: 20px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #e2e8f0;
+    font-size: 1rem;
+  }
+  .search-box input::placeholder { color: #64748b; }
+  .search-box input:focus { outline: none; border-color: #f59e0b; }
+
+  .mindmap {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .branch {
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+  }
+  .branch:hover { border-color: rgba(245, 158, 11, 0.4); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+  .branch-header {
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .branch-header::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #f59e0b, #ef4444);
+  }
+  .branch-header .icon { font-size: 1.4rem; margin-right: 10px; }
+  .branch-header .toggle { transition: transform 0.3s; color: #94a3b8; }
+  .branch.open .toggle { transform: rotate(180deg); color: #f59e0b; }
+  .branch-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .branch.open .branch-body { max-height: 50000px; }
+
+  .node {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .node:hover { background: rgba(245, 158, 11, 0.08); }
+  .node-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fbbf24;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .node-title .arrow { color: #64748b; transition: transform 0.25s; font-size: 0.85rem; }
+  .node.open .arrow { transform: rotate(90deg); color: #f59e0b; }
+  .node-content {
+    display: none;
+    margin-top: 12px;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .node.open .node-content { display: block; }
+  .node-content pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+  }
+  .copy-btn {
+    background: linear-gradient(90deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.25s;
+    width: 100%;
+  }
+  .copy-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+  .copy-btn.copied { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+
+  footer {
+    max-width: 1400px;
+    margin: 40px auto 0;
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #10b981;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px) {
+    header h1 { font-size: 1.6rem; }
+    .mindmap { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 Mesaje Șablon — Agenție de Turism</h1>
+  <p id="subtitle">Bibliotecă profesională de răspunsuri pentru clienți · Română / Русский</p>
+  <div class="controls">
+    <button class="lang-btn active" data-lang="ro">🇷🇴 Română</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+    <button class="action-btn" id="expandAll">📂 Extinde tot</button>
+    <button class="action-btn" id="collapseAll">📁 Restrânge tot</button>
+  </div>
+  <div class="search-box">
+    <input type="text" id="search" placeholder="🔍 Caută un șablon...">
+  </div>
+</header>
+
+<div class="mindmap" id="mindmap"></div>
+
+<footer>
+  <p>© Agenție de Turism · Actualizat 2026 · Dă click pe o categorie → un șablon → butonul „Copiază"</p>
+</footer>
+
+<div class="toast" id="toast">✔ Copiat în clipboard!</div>
+
+<script>
+// ============================================================
+// BAZA DE DATE A ȘABLOANELOR
+// ============================================================
+const DATA = {
+  ui: {
+    ro: {
+      subtitle: "Bibliotecă profesională de răspunsuri pentru clienți · Română / Русский",
+      expand: "📂 Extinde tot",
+      collapse: "📁 Restrânge tot",
+      search: "🔍 Caută un șablon...",
+      copy: "📋 Copiază",
+      copied: "✔ Copiat!",
+      toast: "✔ Copiat în clipboard!",
+      footer: "Dă click pe o categorie → un șablon → butonul „Copiază”"
+    },
+    ru: {
+      subtitle: "Профессиональная библиотека ответов для клиентов · Română / Русский",
+      expand: "📂 Развернуть всё",
+      collapse: "📁 Свернуть всё",
+      search: "🔍 Поиск шаблона...",
+      copy: "📋 Копировать",
+      copied: "✔ Скопировано!",
+      toast: "✔ Скопировано в буфер!",
+      footer: "Кликните по категории → шаблону → кнопке «Копировать»"
+    }
+  },
+  categories: [
+    {
+      id: "rezervare",
+      icon: "📝",
+      title: { ro: "Rezervare & Confirmare", ru: "Бронирование и подтверждение" },
+      nodes: [
+        {
+          id: "rez-online",
+          title: { ro: "Rezervare online — cerințe", ru: "Онлайн-бронирование — требования" },
+          content: {
+            ro: `Bună ziua! 😊
+
+Pentru a efectua rezervarea online avem nevoie de:
+📌 Pozele pașapoartelor tuturor turiștilor (valabile minim 6 luni de la data întoarcerii);
+📌 Avansul de 10% din costul pachetului, în lei moldovenești.
+
+💳 Puteți achita rapid și securizat prin aplicațiile:
+  • MAIB • MICB • OTP Bank • Victoria Bank
+direct în contul companiei noastre.
+
+După confirmarea plății, efectuăm rezervarea și vă transmitem contractul în format electronic, pe email sau WhatsApp.
+
+Vă mulțumim pentru încredere! 🌍✈️`,
+            ru: `Добрый день! 😊
+
+Для оформления онлайн-бронирования нам понадобится:
+📌 Фотографии паспортов всех туристов (срок действия — не менее 6 месяцев с даты возвращения);
+📌 Аванс 10% от стоимости пакета, в молдавских леях.
+
+💳 Оплатить можно быстро и безопасно через приложения:
+  • MAIB • MICB • OTP Bank • Victoria Bank
+напрямую на расчётный счёт компании.
+
+После подтверждения оплаты мы оформляем бронирование и высылаем вам договор в электронном виде на e-mail или WhatsApp.
+
+Благодарим за доверие! 🌍✈️`
+          }
+        },
+        {
+          id: "rez-final",
+          title: { ro: "Finalizarea rezervării online", ru: "Завершение онлайн-бронирования" },
+          content: {
+            ro: `Vă mulțumim pentru încredere! 🙏
+
+La acest moment, din partea dumneavoastră nu mai este necesar nimic.
+
+📅 Pașii următori:
+  1️⃣ Achitarea celei de-a doua părți a pachetului — cu 18 zile înainte de plecare;
+  2️⃣ Eliberarea pachetului de documente — cu 1–3 zile înainte de zbor.
+
+Dacă între timp apar întrebări, suntem aici pentru dumneavoastră cu drag.
+
+O zi minunată în continuare! ☀️`,
+            ru: `Благодарим за доверие! 🙏
+
+На данный момент от вас ничего больше не требуется.
+
+📅 Следующие шаги:
+  1️⃣ Оплата второй части пакета — за 18 дней до вылета;
+  2️⃣ Выдача пакета документов — за 1–3 дня до вылета.
+
+Если в это время возникнут вопросы, мы всегда с радостью поможем.
+
+Отличного дня! ☀️`
+          }
+        },
+        {
+          id: "rez-confirmare",
+          title: { ro: "Confirmare rezervare (cu număr)", ru: "Подтверждение брони (с номером)" },
+          content: {
+            ro: `Felicitări! 🎉 Rezervarea dumneavoastră este confirmată.
+
+📋 Detaliile rezervării:
+  • Număr rezervare: [NR]
+  • Turist principal: [NUME]
+  • Destinație: [ȚARA / HOTEL]
+  • Perioada: [DATA PLECARE] — [DATA ÎNTOARCERE]
+  • Număr persoane: [X adulți + Y copii]
+  • Tip cameră: [TIP]
+  • Regim alimentar: [BB/HB/FB/AI]
+
+📎 Contractul și factura se află atașate.
+Vă rugăm să verificați datele din contract și să ne confirmați printr-un mesaj că totul este corect.
+
+Vacanță frumoasă! 🌴`,
+            ru: `Поздравляем! 🎉 Ваше бронирование подтверждено.
+
+📋 Детали брони:
+  • Номер брони: [NR]
+  • Основной турист: [ФИО]
+  • Направление: [СТРАНА / ОТЕЛЬ]
+  • Даты: [ДАТА ВЫЛЕТА] — [ДАТА ВОЗВРАЩЕНИЯ]
+  • Кол-во человек: [X взрослых + Y детей]
+  • Тип номера: [ТИП]
+  • Питание: [BB/HB/FB/AI]
+
+📎 Договор и счёт во вложении.
+Просим проверить данные и подтвердить сообщением, что всё верно.
+
+Прекрасного отдыха! 🌴`
+          }
+        },
+        {
+          id: "cerere-docs",
+          title: { ro: "Cerere documente client", ru: "Запрос документов клиента" },
+          content: {
+            ro: `Pentru a începe rezervarea, vă rugăm să ne trimiteți:
+
+📸 Fotografia clară a paginii cu datele biometrice a pașaportului (valabil minim 6 luni de la data întoarcerii), pentru fiecare turist;
+📞 Numărul de telefon de contact al turistului principal;
+📧 Adresa de e-mail valabilă (pentru contract și documente);
+👶 În cazul copiilor — certificatul de naștere (copie).
+
+📌 Verificați vă rog:
+  • Pașaportul să nu fie deteriorat;
+  • Numele să corespundă exact cu cel folosit la rezervare;
+  • Toate datele să fie lizibile pe fotografie.
+
+Mulțumim! 🙏`,
+            ru: `Для оформления брони отправьте, пожалуйста:
+
+📸 Чёткое фото страницы с биометрическими данными паспорта (срок действия — не менее 6 месяцев с даты возвращения) для каждого туриста;
+📞 Контактный номер основного туриста;
+📧 Действующий e-mail (для договора и документов);
+👶 Для детей — свидетельство о рождении (копия).
+
+📌 Пожалуйста, проверьте:
+  • Паспорт не повреждён;
+  • Имя полностью совпадает с тем, что указано при бронировании;
+  • На фото всё чётко видно.
+
+Благодарим! 🙏`
+          }
+        },
+        {
+          id: "rez-anulare",
+          title: { ro: "Cerere anulare rezervare (online)", ru: "Заявление на отмену брони (онлайн)" },
+          content: {
+            ro: `CERERE DE ANULARE A REZERVĂRII
+
+Subsemnatul/a: [Nume Prenume]
+Pașaport seria: [    ] nr. [           ]
+Rezervare nr.: [           ]
+Destinație: [                        ]
+Perioada: [                          ]
+
+Prin prezenta solicit anularea rezervării menționate mai sus, din motivul:
+[__________________________________________________]
+
+Am luat cunoștință de condițiile de anulare din contract și accept reținerea penalităților aplicabile în conformitate cu politica turoperatorului.
+
+Data: [__ / __ / ____]
+Semnătura: _______________ (sau confirmare scrisă din email/WhatsApp)
+
+📧 Vă rugăm să răspundeți cu "CONFIRM ANULAREA" la acest mesaj pentru a considera cererea validă.`,
+            ru: `ЗАЯВЛЕНИЕ НА ОТМЕНУ БРОНИ
+
+Я, нижеподписавшийся(-аяся): [ФИО]
+Паспорт серия: [    ] номер: [           ]
+Номер брони: [           ]
+Направление: [                        ]
+Период: [                          ]
+
+Настоящим прошу отменить указанную выше бронь по причине:
+[__________________________________________________]
+
+С условиями аннуляции, указанными в договоре, ознакомлен(а) и согласен(-на) с удержанием штрафов согласно политике туроператора.
+
+Дата: [__ / __ / ____]
+Подпись: _______________ (или письменное подтверждение по email / WhatsApp)
+
+📧 Пожалуйста, ответьте «ПОДТВЕРЖДАЮ ОТМЕНУ» на это сообщение, чтобы заявка считалась действительной.`
+          }
+        },
+        {
+          id: "rez-modificare",
+          title: { ro: "Cerere modificare rezervare + Taxă", ru: "Заявление на изменение брони + плата" },
+          content: {
+            ro: `CERERE DE MODIFICARE A REZERVĂRII
+
+Rezervare nr.: [           ]
+Turist principal: [Nume Prenume]
+Modificarea solicitată:
+☐ Schimbare dată plecare / întoarcere
+☐ Schimbare hotel
+☐ Schimbare tip cameră / regim alimentar
+☐ Adăugare / eliminare turist
+☐ Alta: [___________________]
+
+📌 Informații importante:
+  • Orice modificare este posibilă doar cu acordul turoperatorului și în funcție de disponibilitate;
+  • Se aplică o taxă administrativă de 10 EUR / persoană pentru fiecare modificare;
+  • Diferențele de preț (tarife, taxe) se achită suplimentar.
+
+Vă rugăm să confirmați acceptarea acestor condiții prin răspuns scris.`,
+            ru: `ЗАЯВЛЕНИЕ НА ИЗМЕНЕНИЕ БРОНИ
+
+Номер брони: [           ]
+Основной турист: [ФИО]
+Запрашиваемое изменение:
+☐ Смена даты вылета / возвращения
+☐ Смена отеля
+☐ Смена типа номера / питания
+☐ Добавление / удаление туриста
+☐ Другое: [___________________]
+
+📌 Важно знать:
+  • Любое изменение возможно только с согласия туроператора и при наличии мест;
+  • Применяется административный сбор 10 EUR за человека за каждое изменение;
+  • Разница в цене (тариф, сборы) оплачивается дополнительно.
+
+Пожалуйста, подтвердите согласие с этими условиями письменно.`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "info-practice",
+      icon: "🏨",
+      title: { ro: "Informații practice la hotel", ru: "Практическая информация по отелю" },
+      nodes: [
+        {
+          id: "checkin",
+          title: { ro: "Cazare & Decazare (Check-in / Check-out)", ru: "Заселение и выселение (Check-in / Check-out)" },
+          content: {
+            ro: `📌 Informații privind cazarea:
+
+🕑 Check-in (primirea camerei): după ora 14:00.
+🕛 Check-out (eliberarea camerei): până la ora 12:00.
+
+⏳ În cazul sosirii mai devreme sau al plecării mai târzii, păstrarea camerei se oferă contra cost și doar în funcție de disponibilitatea hotelului.
+
+💡 Sfat: la sosire, puteți lăsa bagajele la recepție (serviciu gratuit în majoritatea hotelurilor) și să vă bucurați de facilități (plajă, piscină, restaurant) până la cazare.`,
+            ru: `📌 Информация о заселении:
+
+🕑 Check-in (заселение): после 14:00.
+🕛 Check-out (выселение): до 12:00.
+
+⏳ При раннем заезде или позднем выезде сохранение номера предоставляется платно и только при наличии свободных номеров.
+
+💡 Совет: по прилёту можно оставить багаж на ресепшен (бесплатно в большинстве отелей) и уже пользоваться инфраструктурой (пляж, бассейн, ресторан) до заселения.`
+          }
+        },
+        {
+          id: "alimentatie",
+          title: { ro: "Tipul de alimentație (BB/HB/FB/AI)", ru: "Тип питания (BB/HB/FB/AI)" },
+          content: {
+            ro: `Vă rugăm să ne comunicați regimul alimentar preferat:
+
+🥐 BB (Bed & Breakfast) — mic dejun;
+🍽 HB (Half Board) — mic dejun + cină;
+🍴 FB (Full Board) — mic dejun + prânz + cină;
+🍹 AI (All Inclusive) — 3 mese pe zi + gustări + băuturi (alcoolice și non-alcoolice locale);
+💎 UAI (Ultra All Inclusive) — include și băuturi de import, snacks extinse, servicii premium.
+
+🌍 Recomandare pentru această destinație: cel mai solicitat regim este [BB / HB / AI] — se potrivește cel mai bine cu specificul zonei și raportul calitate-preț.`,
+            ru: `Пожалуйста, укажите предпочитаемый тип питания:
+
+🥐 BB (Bed & Breakfast) — только завтрак;
+🍽 HB (Half Board) — завтрак + ужин;
+🍴 FB (Full Board) — завтрак + обед + ужин;
+🍹 AI (All Inclusive) — 3 приёма пищи + снеки + напитки (алкогольные и безалкогольные местные);
+💎 UAI (Ultra All Inclusive) — + импортный алкоголь, расширенные снеки, премиум-сервис.
+
+🌍 Рекомендация по этому направлению: чаще всего берут [BB / HB / AI] — оптимальное соотношение цена-качество для этой страны.`
+          }
+        },
+        {
+          id: "bagaj",
+          title: { ro: "Norma de bagaj", ru: "Нормы багажа" },
+          content: {
+            ro: `🧳 Informații despre bagaj:
+
+✅ Bagaj de cală: 1 bucată × 20 kg / persoană;
+✅ Bagaj de mână: 1 bucată × 8 kg / persoană (dimensiuni maxime: 55 × 40 × 20 cm).
+
+⚠️ Este interzis în bagajul de mână:
+  • Lichide peste 100 ml per recipient;
+  • Obiecte ascuțite (foarfece, cuțite, unghieră metalică mare);
+  • Baterii externe (power bank) peste 20.000 mAh.
+
+💡 Depășirea greutății se taxează la aeroport (aprox. 10–15 EUR/kg extra). Dacă aveți nevoie de bagaj suplimentar, rezervați din timp pentru preț redus.`,
+            ru: `🧳 Информация о багаже:
+
+✅ Регистрируемый багаж: 1 место × 20 кг на человека;
+✅ Ручная кладь: 1 место × 8 кг на человека (макс. размер: 55 × 40 × 20 см).
+
+⚠️ Запрещено в ручной клади:
+  • Жидкости объёмом более 100 мл в одной ёмкости;
+  • Острые предметы (ножницы, ножи, крупные металлические маникюрные принадлежности);
+  • Power bank ёмкостью более 20 000 мА·ч.
+
+💡 Перевес оплачивается в аэропорту (≈10–15 EUR за кг). Если нужен дополнительный багаж — выгоднее бронировать заранее.`
+          }
+        },
+        {
+          id: "transfer",
+          title: { ro: "Transfer aeroport — hotel", ru: "Трансфер аэропорт — отель" },
+          content: {
+            ro: `🚐 Informații despre transfer:
+
+La sosirea în aeroport, după recuperarea bagajelor, veți fi întâmpinați de reprezentantul companiei de transfer [NUME COMPANIE], care ține o plăcuță cu numele / logo-ul operatorului sau al hotelului.
+
+📌 În caz de întârziere sau neîntâlnire:
+  • Numărul de contact al companiei de transfer este trecut pe voucher;
+  • Vă rugăm să ne sunați imediat la 078 326 222, iar noi vom rezolva situația în timp real.
+
+⏱ Durata estimativă a transferului: [X] minute / ore (în funcție de hotel).`,
+            ru: `🚐 Информация о трансфере:
+
+По прилёту, после получения багажа, вас встретит представитель трансферной компании [НАЗВАНИЕ], держащий табличку с вашим именем / логотипом оператора или отеля.
+
+📌 При задержке или если вас не встретили:
+  • Контактный номер трансферной компании указан на ваучере;
+  • Позвоните нам сразу на 078 326 222 — решим в режиме реального времени.
+
+⏱ Примерная длительность трансфера: [X] минут / часов (зависит от отеля).`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "vize",
+      icon: "🛂",
+      title: { ro: "Vize & Taxe de stat", ru: "Визы и государственные сборы" },
+      nodes: [
+        {
+          id: "viza-egipt",
+          title: { ro: "Viză Egipt", ru: "Виза Египет" },
+          content: {
+            ro: `🛂 Viză Egipt — informații importante:
+
+Pentru această destinație este obligatorie obținerea vizei.
+📍 Viza se eliberează direct în aeroport, la sosire (procedură simplă, 10–15 minute).
+
+💵 Taxa: 30 USD / persoană (indiferent de vârstă).
+
+⚠️ Condiții de plată:
+  • Numai CASH, în USD;
+  • Bancnote emise după anul 2019;
+  • Fără rest — vă rugăm să aveți exact suma.
+
+📌 Sfat practic: schimbați USD înainte de plecare (sau la sosire, la un bancomat) — la aeroport nu se acceptă carduri pentru viză.`,
+            ru: `🛂 Виза Египет — важно знать:
+
+Для этого направления виза обязательна.
+📍 Виза оформляется прямо в аэропорту по прилёту (процедура простая, 10–15 минут).
+
+💵 Сбор: 30 USD с человека (независимо от возраста).
+
+⚠️ Условия оплаты:
+  • Только НАЛИЧНЫЕ, в USD;
+  • Купюры, выпущенные после 2019 года;
+  • Без сдачи — приготовьте точную сумму заранее.
+
+📌 Совет: подготовьте USD заранее (или снимите в банкомате по прилёту) — для визы картой оплатить нельзя.`
+          }
+        },
+        {
+          id: "viza-turcia",
+          title: { ro: "Viză Turcia", ru: "Виза Турция" },
+          content: {
+            ro: `🛂 Viză Turcia:
+
+✅ Pentru cetățenii Republicii Moldova cu pașaport biometric — NU este necesară viză pentru ședere turistică de până la 90 de zile.
+📌 Condiție: pașaportul să fie valabil minim 6 luni de la data intrării în țară.
+
+❗ Pentru pașaport non-biometric sau alte cetățenii — vă rugăm să ne contactați pentru detalii specifice.`,
+            ru: `🛂 Виза Турция:
+
+✅ Для граждан Республики Молдова с биометрическим паспортом виза НЕ требуется для туристического пребывания до 90 дней.
+📌 Условие: паспорт должен быть действителен не менее 6 месяцев с даты въезда.
+
+❗ Для небиометрического паспорта или другого гражданства — свяжитесь с нами для уточнения.`
+          }
+        },
+        {
+          id: "viza-uae",
+          title: { ro: "Viză Emirate (Dubai)", ru: "Виза ОАЭ (Дубай)" },
+          content: {
+            ro: `🛂 Viză Emiratele Arabe Unite (Dubai / Abu Dhabi):
+
+📌 Viza se obține ONLINE, înainte de zbor (e-visa).
+💵 Taxa: aproximativ 80–120 USD / persoană (variază în funcție de durata șederii: 30 sau 60 de zile).
+⏱ Termen de emitere: 3–5 zile lucrătoare.
+
+📋 Documente necesare:
+  • Scan color al pașaportului (valabil minim 6 luni);
+  • Fotografie digitală tip pașaport;
+  • Confirmarea rezervării hotelului.
+
+Noi ne ocupăm de procedura online — trimiteți documentele și vă confirmăm viza pe email.`,
+            ru: `🛂 Виза ОАЭ (Дубай / Абу-Даби):
+
+📌 Виза оформляется ОНЛАЙН до вылета (e-visa).
+💵 Стоимость: примерно 80–120 USD с человека (зависит от срока: 30 или 60 дней).
+⏱ Срок оформления: 3–5 рабочих дней.
+
+📋 Необходимые документы:
+  • Цветной скан паспорта (срок действия — не менее 6 месяцев);
+  • Цифровое фото паспортного формата;
+  • Подтверждение брони отеля.
+
+Оформление онлайн берём на себя — пришлите документы, и мы вышлем визу на e-mail.`
+          }
+        },
+        {
+          id: "taxe-grecia",
+          title: { ro: "Taxă turistică — Grecia", ru: "Туристический сбор — Греция" },
+          content: {
+            ro: `🇬🇷 Taxă turistică de stat — Grecia:
+
+În hotelurile din Grecia se percepe o taxă turistică oficială, care NU este inclusă în prețul pachetului:
+
+⭐ Hoteluri 5* și vile — 15,00 EUR / noapte / cameră;
+⭐ Hoteluri 4* — 10,00 EUR / noapte / cameră;
+⭐ Hoteluri 3* — 5,00 EUR / noapte / cameră;
+⭐ Hoteluri 1* și 2* — 2,00 EUR / noapte / cameră;
+🏠 Apartamente — 2,00 EUR / noapte / cameră.
+
+🔹 Taxa se achită la check-in, la recepția hotelului, doar în CASH (EUR).`,
+            ru: `🇬🇷 Государственный туристический сбор — Греция:
+
+В отелях Греции взимается обязательный туристический сбор, не включённый в стоимость пакета:
+
+⭐ Отели 5* и виллы — 15,00 EUR / ночь / номер;
+⭐ Отели 4* — 10,00 EUR / ночь / номер;
+⭐ Отели 3* — 5,00 EUR / ночь / номер;
+⭐ Отели 1* и 2* — 2,00 EUR / ночь / номер;
+🏠 Апартаменты — 2,00 EUR / ночь / номер.
+
+🔹 Сбор оплачивается на ресепшен при заселении, ТОЛЬКО наличными (EUR).`
+          }
+        },
+        {
+          id: "taxe-spania",
+          title: { ro: "Taxă turistică — Spania / Italia", ru: "Турсбор — Испания / Италия" },
+          content: {
+            ro: `🇪🇸 🇮🇹 Taxe turistice — Spania & Italia:
+
+Aceste țări aplică o taxă turistică locală achitată direct la hotel:
+
+🇪🇸 Spania (Barcelona, Baleare):
+  • 5* — 3,50 – 4,00 EUR / noapte / persoană;
+  • 4* — 2,25 – 3,00 EUR;
+  • 3* și mai jos — 1,00 – 2,20 EUR;
+  • Copii sub 16/17 ani — scutiți (variază pe regiuni).
+
+🇮🇹 Italia (Roma, Veneția, Florența):
+  • 5* — 6,00 – 10,00 EUR / noapte / persoană;
+  • 4* — 4,00 – 7,00 EUR;
+  • 3* — 3,00 – 4,00 EUR;
+  • Copii sub 10 ani — de obicei scutiți.
+
+🔹 Plata se face la check-in, doar cash (EUR), maximum 7 nopți consecutive.`,
+            ru: `🇪🇸 🇮🇹 Туристические сборы — Испания и Италия:
+
+В этих странах взимается местный турсбор, оплачиваемый в отеле:
+
+🇪🇸 Испания (Барселона, Балеары):
+  • 5* — 3,50 – 4,00 EUR / ночь / человек;
+  • 4* — 2,25 – 3,00 EUR;
+  • 3* и ниже — 1,00 – 2,20 EUR;
+  • Дети до 16/17 лет — освобождены (зависит от региона).
+
+🇮🇹 Италия (Рим, Венеция, Флоренция):
+  • 5* — 6,00 – 10,00 EUR / ночь / человек;
+  • 4* — 4,00 – 7,00 EUR;
+  • 3* — 3,00 – 4,00 EUR;
+  • Дети до 10 лет — обычно освобождены.
+
+🔹 Оплата — на ресепшен, только наличными (EUR), максимум за 7 ночей подряд.`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "plati",
+      icon: "💳",
+      title: { ro: "Plăți, curs & taxe", ru: "Оплата, курс и сборы" },
+      nodes: [
+        {
+          id: "curs-operator",
+          title: { ro: "Cursul operatorului", ru: "Курс оператора" },
+          content: {
+            ro: `💶 Cursul valutar — informații importante:
+
+📌 Toate plățile se efectuează în lei moldovenești (MDL), conform cursului valutar al turoperatorului din ziua plății.
+
+De regulă, cursul operatorului este cu o diferență mică peste cursul oficial al Băncii Naționale a Moldovei. Această diferență reflectă comisioanele aferente transferurilor valutare internaționale către furnizori și turoperatori.
+
+🔸 Cursul de astăzi: 1 EUR = [__,__] MDL / 1 USD = [__,__] MDL
+
+Vă rugăm să ne confirmați suma exactă înainte de efectuarea transferului.`,
+            ru: `💶 Курс валют — важная информация:
+
+📌 Все платежи производятся в молдавских леях (MDL) по курсу туроператора, установленному на день оплаты.
+
+Как правило, курс оператора чуть выше официального курса Национального банка Молдовы. Эта разница покрывает комиссии за международные валютные переводы поставщикам и операторам.
+
+🔸 Курс на сегодня: 1 EUR = [__,__] MDL / 1 USD = [__,__] MDL
+
+Пожалуйста, уточните точную сумму перед переводом.`
+          }
+        },
+        {
+          id: "taxa-copil",
+          title: { ro: "Taxă copil sub 2 ani (INF)", ru: "Сбор за ребёнка до 2 лет (INF)" },
+          content: {
+            ro: `👶 Taxă pentru copiii sub 2 ani (INFANT):
+
+Pentru copiii cu vârsta până la 2 ani (la data întoarcerii) se achită doar taxa aeriană, în valoare de 80 EUR / copil.
+
+📌 Important:
+  • Această sumă NU este inclusă în prețul pachetului;
+  • Acoperă cheltuielile aeroportuare și costurile operaționale ale zborului impuse de compania aeriană;
+  • Copilul NU ocupă loc separat în avion (stă în brațele părintelui) și nu are bagaj de cală separat;
+  • La hotel, copilul este cazat gratuit în patul părinților (pătuțul bebe se solicită suplimentar, la cerere).`,
+            ru: `👶 Сбор за детей до 2 лет (INFANT):
+
+Для детей в возрасте до 2 лет (на дату возвращения) оплачивается только авиасбор — 80 EUR / ребёнок.
+
+📌 Важно:
+  • Эта сумма НЕ включена в стоимость пакета;
+  • Она покрывает аэропортовые и операционные расходы авиакомпании;
+  • Ребёнок НЕ занимает отдельное место в самолёте (летит на руках у родителя) и не имеет отдельного багажа;
+  • В отеле ребёнок размещается бесплатно в кровати родителей (детская кроватка — по запросу, может быть за доплату).`
+          }
+        },
+        {
+          id: "plata-2",
+          title: { ro: "Plata părții a 2-a (final)", ru: "Оплата второй части (финал)" },
+          content: {
+            ro: `📅 Reminder plată finală:
+
+Bună ziua! 😊 Vă reamintim cu drag că se apropie termenul pentru plata celei de-a doua părți a pachetului turistic:
+
+📌 Detalii plată:
+  • Rezervare nr.: [           ]
+  • Suma de plată: [__________] MDL / EUR;
+  • Termen limită: [DATA];
+  • Cursul turoperatorului astăzi: 1 EUR = [__,__] MDL.
+
+💳 Puteți achita prin aplicația bancară (MAIB, MICB, OTP, Victoria Bank) sau la casieria agenției.
+
+După plată, vă rugăm să ne trimiteți dovada (screenshot / chitanța). Mulțumim! 🙏`,
+            ru: `📅 Напоминание об окончательной оплате:
+
+Добрый день! 😊 Напоминаем, что приближается срок оплаты второй части вашего тура:
+
+📌 Детали оплаты:
+  • Номер брони: [           ]
+  • Сумма: [__________] MDL / EUR;
+  • Крайний срок: [ДАТА];
+  • Курс туроператора на сегодня: 1 EUR = [__,__] MDL.
+
+💳 Оплатить можно через банковское приложение (MAIB, MICB, OTP, Victoria Bank) или в кассе агентства.
+
+После оплаты, пожалуйста, пришлите подтверждение (скрин / чек). Спасибо! 🙏`
+          }
+        },
+        {
+          id: "asigurare",
+          title: { ro: "Asigurare medicală suplimentară", ru: "Дополнительная медицинская страховка" },
+          content: {
+            ro: `🏥 Asigurare medicală — informații:
+
+În prețul pachetului este inclusă asigurarea medicală standard, care acoperă primul ajutor medical de urgență, cu limita de [30.000 EUR].
+
+💡 Recomandăm opțional asigurare medicală EXTINSĂ pentru:
+  • Protecție suplimentară împotriva COVID-19 / boli cronice;
+  • Sport & activități active (parapantă, scuba, ski, jet-ski);
+  • Familie cu copii / persoane peste 65 de ani;
+  • Deplasări în țări cu cost medical ridicat (UAE, USA).
+
+💵 Costul extinderii: de la 3 EUR / zi / persoană.
+Doriți să adăugăm această opțiune?`,
+            ru: `🏥 Медицинская страховка — информация:
+
+В стоимость пакета включена стандартная медицинская страховка, покрывающая первую неотложную помощь с лимитом [30 000 EUR].
+
+💡 Рекомендуем дополнительно РАСШИРЕННУЮ страховку:
+  • Защита от COVID-19 / хронических заболеваний;
+  • Спорт и активный отдых (параплан, дайвинг, лыжи, джет-ски);
+  • Семьи с детьми / пожилые люди (65+);
+  • Страны с дорогой медициной (ОАЭ, США).
+
+💵 Стоимость расширения: от 3 EUR / день / человек.
+Хотите добавить эту опцию?`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "obiectii",
+      icon: "🤔",
+      title: { ro: "Obiecții clienți — Răspunsuri", ru: "Возражения клиентов — ответы" },
+      nodes: [
+        {
+          id: "ma-mai-gandesc",
+          title: { ro: "„Mă mai gândesc”", ru: "«Я подумаю»" },
+          content: {
+            ro: `Sigur, înțeleg perfect! 😊
+
+Vă rog totuși să aveți în vedere că, în această perioadă, locurile și tarifele se pot modifica foarte rapid — uneori chiar în aceeași zi.
+
+🎯 Ce vă pot propune:
+  • Pot bloca prețul actual pentru dumneavoastră timp de 24–48 de ore, fără plata avansului — astfel nu pierdeți oferta;
+  • Dacă mai sunt aspecte neclare, spuneți-mi exact ce anume vă împiedică (preț, dată, hotel, detalii) și vă găsesc cea mai bună variantă personalizată.
+
+De ce anume mai aveți nevoie ca să luați decizia? 🌟`,
+            ru: `Конечно, я вас прекрасно понимаю! 😊
+
+Хочу только обратить внимание: в этот период места и цены меняются очень быстро — иногда в течение одного дня.
+
+🎯 Что я могу предложить:
+  • Могу забронировать текущую цену на 24–48 часов без аванса — чтобы вы не упустили предложение;
+  • Если остались сомнения, скажите, что именно вас останавливает (цена, даты, отель, детали) — подберу самый подходящий вариант лично для вас.
+
+Что именно вам нужно, чтобы принять решение? 🌟`
+          }
+        },
+        {
+          id: "prea-scump",
+          title: { ro: "„Prețul este prea mare”", ru: "«Слишком дорого»" },
+          content: {
+            ro: `Vă înțeleg perfect — bugetul contează enorm! 💰
+
+🎯 Haideți să vedem împreună soluții:
+  • Pot căuta aceeași destinație la un hotel cu 1 stea mai puțin, care are recenzii excelente;
+  • Dacă aveți flexibilitate la date, cu 3–4 zile diferență poate scădea prețul cu 100–200 EUR / persoană;
+  • Există reduceri Early Booking și Last Minute — vă pot arăta ambele variante;
+  • Pentru familii cu copii — unele hoteluri oferă "Copil gratuit" până la o anumită vârstă.
+
+Spuneți-mi, vă rog: ce buget țintă aveți și cât de flexibil sunteți la date / destinație? Găsesc cu siguranță o variantă potrivită. 🌴`,
+            ru: `Прекрасно вас понимаю — бюджет имеет огромное значение! 💰
+
+🎯 Давайте вместе найдём решение:
+  • Могу подобрать то же направление, но в отеле на 1 звезду ниже с отличными отзывами;
+  • Если даты гибкие — сдвиг на 3–4 дня может снизить цену на 100–200 EUR с человека;
+  • Есть скидки Early Booking и Last Minute — покажу оба варианта;
+  • Для семей с детьми в ряде отелей действует «Ребёнок бесплатно» до определённого возраста.
+
+Подскажите, какой у вас целевой бюджет и насколько вы гибки в датах / направлениях? Обязательно найду подходящий вариант. 🌴`
+          }
+        },
+        {
+          id: "booking-direct",
+          title: { ro: "„Rezerv direct pe Booking/site”", ru: "«Забронирую сам на Booking/сайте»" },
+          content: {
+            ro: `Este o opțiune, desigur! 😊 Dați-mi un moment să vă arăt avantajele pachetului prin agenție:
+
+✅ Preț final, fără surprize — include zbor + transfer + hotel + asigurare;
+✅ Asistență 24/7 pe toată perioada vacanței — pentru orice problemă (zbor anulat, schimbare cameră, urgență medicală);
+✅ Protecție legală prin contract (Legea 352 privind turismul);
+✅ Plată în lei, prin bancă locală — fără comisioane valutare ascunse;
+✅ În caz de anulare forțată (boală, motive aeriene), aveți drepturi clare conform legii;
+✅ Ofertele noastre cu turoperatori sunt adesea mai ieftine decât Booking direct, datorită tarifelor corporative.
+
+🎯 Pot să vă fac un calcul comparativ chiar acum — să vedem concret diferența?`,
+            ru: `Да, это вариант! 😊 Дайте минутку — покажу преимущества пакета через агентство:
+
+✅ Финальная цена без сюрпризов — включает перелёт + трансфер + отель + страховку;
+✅ Поддержка 24/7 на всё время отпуска — любая проблема (отмена рейса, смена номера, медслучай);
+✅ Юридическая защита по договору (закон 352 о туризме);
+✅ Оплата в леях через местный банк — без скрытых валютных комиссий;
+✅ При вынужденной отмене (болезнь, причины авиакомпании) — чёткие права по закону;
+✅ Наши цены с операторами зачастую ниже прямого бронирования, за счёт корпоративных тарифов.
+
+🎯 Могу прямо сейчас сделать сравнительный расчёт — хотите увидеть разницу?`
+          }
+        },
+        {
+          id: "nu-am-decis",
+          title: { ro: "„Nu am decis destinația”", ru: "«Не определились с направлением»" },
+          content: {
+            ro: `Perfect, vă ajut cu plăcere să alegeți! 🌍
+
+Pentru a vă recomanda cea mai potrivită destinație, vă rog să-mi spuneți:
+
+1️⃣ Perioada preferată (luna, durata vacanței);
+2️⃣ Numărul de persoane (adulți + copii, vârsta copiilor);
+3️⃣ Bugetul orientativ / persoană;
+4️⃣ Ce tip de vacanță căutați:
+   🏖 Plajă și relaxare;
+   🏛 Cultură și orașe istorice;
+   ⛰ Natură și aventură;
+   🍷 Gastronomie și vin;
+   🎿 Ski / sporturi;
+5️⃣ Dacă aveți preferințe de climă (cald / moderat / rece).
+
+Pe baza acestor informații vă trimit top 3 destinații potrivite profilului dumneavoastră. 🌟`,
+            ru: `Отлично, с удовольствием помогу с выбором! 🌍
+
+Чтобы подобрать идеальное направление, подскажите:
+
+1️⃣ Предпочтительный период (месяц, длительность отпуска);
+2️⃣ Количество человек (взрослые + дети, возраст детей);
+3️⃣ Ориентировочный бюджет на человека;
+4️⃣ Какой отдых вас интересует:
+   🏖 Пляж и релакс;
+   🏛 Культура и исторические города;
+   ⛰ Природа и приключения;
+   🍷 Гастрономия и вина;
+   🎿 Лыжи / спорт;
+5️⃣ Есть ли предпочтения по климату (жарко / умеренно / прохладно).
+
+На основе этой информации вышлю топ-3 направления именно для вас. 🌟`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "documente",
+      icon: "📄",
+      title: { ro: "Pachetul de documente & Plecare", ru: "Пакет документов и вылет" },
+      nodes: [
+        {
+          id: "pachet-docs",
+          title: { ro: "Pachetul complet — predare", ru: "Полный пакет — передача" },
+          content: {
+            ro: `Bună ziua! 😊 Vă transmitem pachetul cu documentele necesare pentru călătorie.
+
+Vă rugăm să le parcurgeți cu atenție. Pentru orice întrebări sau nelămuriri, sunați-ne fără ezitare la 📞 078 326 222. Suntem aici pentru a vă oferi o vacanță de neuitat! 💬✨
+
+📄 Documentele incluse:
+
+✈️ BILETELE DE AVION
+  • Zborul dvs: [DATA] la ora [ORA];
+  • Prezentarea la aeroport: [DATA] la ora [ORA — CU 3 ORE ÎNAINTE DE ZBOR] ❗
+  • Bagaj cală: 1 × 20 kg / pers. | Bagaj mână: 1 × 8 kg / pers.
+
+🚍 3 VOUCHERE (pentru transfer & hotel):
+  1️⃣ Voucher transfer aeroport → hotel;
+  2️⃣ Voucher cazare (prezentat la recepție);
+  3️⃣ Voucher transfer hotel → aeroport.
+  • La ieșirea din aeroport veți fi întâmpinați de compania [NUME].
+
+🏥 ASIGURAREA MEDICALĂ
+  • Acoperă primul ajutor medical în caz de urgență;
+  • Numărul liniei asistență 24/7 este trecut pe poliță.
+
+📞 Pentru orice întrebare, apelați-ne la 078 326 222.
+Vă mulțumim pentru încredere și vă dorim o vacanță de neuitat! 🙏🌴`,
+            ru: `Добрый день! 😊 Высылаем пакет документов для вашей поездки.
+
+Просим внимательно с ними ознакомиться. По любым вопросам звоните без колебаний 📞 078 326 222. Мы здесь, чтобы ваш отдых стал незабываемым! 💬✨
+
+📄 В пакет входят:
+
+✈️ АВИАБИЛЕТЫ
+  • Ваш рейс: [ДАТА] в [ВРЕМЯ];
+  • Прибытие в аэропорт: [ДАТА] в [ВРЕМЯ — ЗА 3 ЧАСА ДО ВЫЛЕТА] ❗
+  • Багаж: 1 × 20 кг / чел. | Ручная кладь: 1 × 8 кг / чел.
+
+🚍 3 ВАУЧЕРА (трансфер и отель):
+  1️⃣ Ваучер трансфер аэропорт → отель;
+  2️⃣ Ваучер на проживание (предъявить на ресепшен);
+  3️⃣ Ваучер трансфер отель → аэропорт.
+  • При выходе из аэропорта вас встретит компания [НАЗВАНИЕ].
+
+🏥 МЕДИЦИНСКАЯ СТРАХОВКА
+  • Покрывает первую неотложную медпомощь;
+  • Номер круглосуточной линии помощи указан в полисе.
+
+📞 По любым вопросам — 078 326 222.
+Спасибо за доверие и отличного отпуска! 🙏🌴`
+          }
+        },
+        {
+          id: "reminder-aeroport",
+          title: { ro: "Reminder înainte de zbor (24h)", ru: "Напоминание перед вылетом (24ч)" },
+          content: {
+            ro: `✈️ Cu 24h înainte de zbor — reminder plecare:
+
+Bună ziua! 😊 Vacanța dumneavoastră începe mâine! Iată reminder-ul final:
+
+📅 Detaliile zborului:
+  • Data zborului: [DATA];
+  • Ora zborului: [ORA];
+  • ❗ Prezentați-vă la aeroport la ora [ORA — cu 3 ORE ÎNAINTE];
+  • Terminalul: [T1 / T2];
+  • Check-in online: dacă e disponibil, deschis cu 24h înainte.
+
+📋 Verificați înainte de plecare:
+  ✅ Pașaportul (valabil minim 6 luni de la întoarcere);
+  ✅ Toate voucherele (printate sau salvate pe telefon);
+  ✅ Biletul de avion;
+  ✅ Asigurarea medicală;
+  ✅ Suficient cash pentru viză / taxe turistice / bacșișuri.
+
+🌴 Vacanță minunată! Suntem aici pentru orice situație: 078 326 222.`,
+            ru: `✈️ За 24 часа до вылета — финальное напоминание:
+
+Добрый день! 😊 Ваш отпуск начинается завтра! Держите финальный чек-лист:
+
+📅 Детали рейса:
+  • Дата: [ДАТА];
+  • Время: [ВРЕМЯ];
+  • ❗ Прибытие в аэропорт в [ВРЕМЯ — ЗА 3 ЧАСА];
+  • Терминал: [T1 / T2];
+  • Онлайн-регистрация: если доступна, открывается за 24 часа.
+
+📋 Проверьте перед выездом:
+  ✅ Паспорт (действителен не менее 6 месяцев после возвращения);
+  ✅ Все ваучеры (распечатанные или на телефоне);
+  ✅ Авиабилет;
+  ✅ Медстраховку;
+  ✅ Наличные на визу / турсбор / чаевые.
+
+🌴 Прекрасного отдыха! Мы на связи в любой ситуации: 078 326 222.`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "follow-up",
+      icon: "💬",
+      title: { ro: "Follow-up & Relaționare", ru: "Follow-up и отношения с клиентами" },
+      nodes: [
+        {
+          id: "welcome",
+          title: { ro: "Mesaj de bun-venit (primul contact)", ru: "Приветственное сообщение (первый контакт)" },
+          content: {
+            ro: `Bună ziua! 😊
+
+Vă mulțumim că ne-ați ales pentru a vă planifica vacanța! Sunt [NUME], consultantul dumneavoastră de turism, și voi fi alături de dumneavoastră pe tot parcursul procesului — de la alegerea destinației până la întoarcerea acasă.
+
+Pentru a vă oferi cele mai bune opțiuni, vă rog să-mi spuneți:
+1️⃣ Destinația preferată (sau „să mă surprindeți"? 😉);
+2️⃣ Perioada și durata dorită;
+3️⃣ Numărul de persoane și vârsta copiilor (dacă e cazul);
+4️⃣ Bugetul orientativ.
+
+Vă răspund cu oferte personalizate în maxim 1–2 ore. 🌍✈️`,
+            ru: `Добрый день! 😊
+
+Спасибо, что выбрали нас для планирования отдыха! Меня зовут [ИМЯ], я ваш туристический консультант и буду рядом на всех этапах — от выбора направления до возвращения домой.
+
+Чтобы подобрать лучшие варианты, подскажите:
+1️⃣ Предпочитаемое направление (или «удивите меня»? 😉);
+2️⃣ Желаемые даты и длительность;
+3️⃣ Количество человек и возраст детей (если есть);
+4️⃣ Ориентировочный бюджет.
+
+Пришлю персональные предложения в течение 1–2 часов. 🌍✈️`
+          }
+        },
+        {
+          id: "followup-oferta",
+          title: { ro: "Follow-up după ofertă (24–48h)", ru: "Follow-up после оферты (24–48ч)" },
+          content: {
+            ro: `Bună ziua! 😊
+
+V-am trimis ofertele acum [X] zile și voiam să văd dacă ați avut ocazia să le analizați.
+
+🎯 Vă reamintesc că:
+  • Ofertele se pot modifica rapid în această perioadă;
+  • Pot rezerva prețul actual pentru 24h fără avans, dacă doriți să vă gândiți liniștit.
+
+Aveți întrebări, doriți alte variante sau preferați să discutăm la telefon? Spuneți-mi cum vă este mai comod.
+
+O zi frumoasă! 🌞`,
+            ru: `Добрый день! 😊
+
+Я отправил(а) вам предложения [X] дней назад — хотел(а) узнать, успели ли посмотреть.
+
+🎯 Напомню:
+  • В этот период цены могут меняться быстро;
+  • Могу забронировать текущую цену на 24 часа без аванса — чтобы вы могли спокойно принять решение.
+
+Есть ли вопросы, нужны ли другие варианты, или удобнее созвониться? Подскажите, как вам комфортнее.
+
+Хорошего дня! 🌞`
+          }
+        },
+        {
+          id: "check-vacanta",
+          title: { ro: "Check în timpul vacanței (ziua 2)", ru: "Check во время отпуска (2-й день)" },
+          content: {
+            ro: `Bună ziua! 🌴
+
+Sperăm că vacanța decurge minunat! ☀️
+
+Voiam doar să verificăm dacă totul este în regulă:
+  • Cazarea a fost ok? (camera, curățenia, mâncarea)
+  • Transferul a decurs fără probleme?
+  • Aveți nevoie de recomandări pentru excursii, restaurante sau locuri de vizitat?
+
+Pentru orice nelămurire, suntem la un mesaj distanță sau la 📞 078 326 222.
+
+Bucurați-vă din plin de zilele de relaxare! 🏖✨`,
+            ru: `Добрый день! 🌴
+
+Надеемся, ваш отдых проходит замечательно! ☀️
+
+Просто хотели убедиться, что всё в порядке:
+  • Как проживание? (номер, чистота, питание)
+  • Трансфер прошёл без проблем?
+  • Нужны ли рекомендации по экскурсиям, ресторанам или достопримечательностям?
+
+По любым вопросам мы всегда на связи: 📞 078 326 222.
+
+Приятного отдыха и ярких впечатлений! 🏖✨`
+          }
+        },
+        {
+          id: "intoarcere",
+          title: { ro: "Mesaj la întoarcere + Recenzie", ru: "Сообщение после возвращения + Отзыв" },
+          content: {
+            ro: `Bine ați revenit acasă! 🏡✨
+
+Sperăm că vacanța a fost tot ce v-ați dorit și chiar mai mult! 🌴☀️
+
+Ne-ar ajuta enorm dacă ați avea un minut să:
+⭐ Lăsați un review Google / Facebook despre experiența cu noi — link: [LINK];
+📸 Împărtășiți o fotografie preferată (cu permisiunea dumneavoastră, o putem publica pe pagina noastră);
+💬 Ne spuneți sincer ce ați îmbunătăți — feedback-ul dumneavoastră ne ajută să creștem.
+
+🎁 Bonus: pentru orice review lăsat, oferim 3% reducere la următoarea rezervare!
+
+Mulțumim că ați ales [AGENȚIA]! Abia așteptăm să vă planificăm următoarea aventură. ✈️🌍`,
+            ru: `С возвращением домой! 🏡✨
+
+Надеемся, отпуск превзошёл все ваши ожидания! 🌴☀️
+
+Нам очень поможет, если уделите минуту и:
+⭐ Оставите отзыв в Google / Facebook о нашей работе — ссылка: [LINK];
+📸 Поделитесь любимым фото (с вашего разрешения, можем опубликовать на нашей странице);
+💬 Честно скажете, что нам стоит улучшить — ваш фидбек важен для нас.
+
+🎁 Бонус: за каждый отзыв — 3% скидки на следующее бронирование!
+
+Спасибо, что выбрали [АГЕНТСТВО]! С нетерпением ждём следующего путешествия вместе. ✈️🌍`
+          }
+        },
+        {
+          id: "aniversare",
+          title: { ro: "Felicitare aniversare / sărbători", ru: "Поздравление с днём рождения / праздниками" },
+          content: {
+            ro: `🎂 La mulți ani, [NUME]! 🎉
+
+Vă dorim o zi plină de zâmbete, sănătate și fericire, iar anul acesta să fie presărat cu aventuri minunate și destinații visate! 🌍✈️
+
+🎁 Cadoul nostru pentru dumneavoastră:
+Reducere specială de [5%] la orice pachet turistic rezervat în luna de naștere!
+Cod: BDAY-[CODE]
+
+Mulțumim că sunteți alături de noi și abia așteptăm să vă planificăm următoarea escapadă! 🌴`,
+            ru: `🎂 С днём рождения, [ИМЯ]! 🎉
+
+Желаем дня, полного улыбок, здоровья и счастья, а года — наполненного удивительными приключениями и сбывшимися мечтами о путешествиях! 🌍✈️
+
+🎁 Наш подарок для вас:
+Специальная скидка [5%] на любой тур, забронированный в месяц вашего рождения!
+Код: BDAY-[CODE]
+
+Спасибо, что вы с нами — с нетерпением ждём, чтобы спланировать ваше следующее приключение! 🌴`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "situatii",
+      icon: "⚠️",
+      title: { ro: "Situații speciale & Crize", ru: "Особые ситуации и кризисы" },
+      nodes: [
+        {
+          id: "intarziere-zbor",
+          title: { ro: "Întârziere / anulare zbor", ru: "Задержка / отмена рейса" },
+          content: {
+            ro: `Bună ziua! ⚠️
+
+Vă informăm că zborul dumneavoastră [NR] din data de [DATA] a fost [ÎNTÂRZIAT / ANULAT] de către compania aeriană [NUME].
+
+📌 Situația actuală:
+  • Cauza: [CONDIȚII METEO / MOTIVE TEHNICE / ALT MOTIV];
+  • Noua oră estimată de plecare: [ORA] (dacă se aplică);
+  • Zbor alternativ: [DETALII];
+
+🎯 Drepturile dumneavoastră (conform Regulamentului EU 261/2004):
+  • Compania aeriană oferă asistență (masă, cazare, apel telefonic dacă întârzierea depășește o anumită durată);
+  • În cazul anulării, aveți dreptul la rerutare sau rambursare.
+
+✅ Noi, ca agenție, facem tot posibilul pentru a minimiza impactul. Vă rugăm să rămâneți la dispoziție și să nu părăsiți aeroportul / locația fără confirmarea noastră.
+
+📞 Suntem permanent la telefon: 078 326 222.`,
+            ru: `Добрый день! ⚠️
+
+Сообщаем, что ваш рейс [НР] от [ДАТА] был [ЗАДЕРЖАН / ОТМЕНЁН] авиакомпанией [НАЗВАНИЕ].
+
+📌 Текущая ситуация:
+  • Причина: [ПОГОДА / ТЕХНИЧЕСКАЯ / ДРУГАЯ];
+  • Новое ориентировочное время вылета: [ВРЕМЯ] (если применимо);
+  • Альтернативный рейс: [ДЕТАЛИ];
+
+🎯 Ваши права (по Регламенту ЕС 261/2004):
+  • Авиакомпания обязана оказать помощь (питание, проживание, звонок при значительной задержке);
+  • При отмене — право на рерут или возврат стоимости.
+
+✅ Мы, как агентство, делаем всё, чтобы минимизировать последствия. Пожалуйста, оставайтесь на связи и не покидайте аэропорт / место без нашего подтверждения.
+
+📞 Мы на связи круглосуточно: 078 326 222.`
+          }
+        },
+        {
+          id: "modif-operator",
+          title: { ro: "Modificare din partea turoperatorului", ru: "Изменение от туроператора" },
+          content: {
+            ro: `Bună ziua! 📣
+
+Vă informăm despre o modificare operată de turoperatorul [NUME] în rezervarea dumneavoastră nr. [NR]:
+
+🔸 Modificarea:
+  • [SCHIMBARE HOTEL / SCHIMBARE ORĂ ZBOR / SCHIMBARE TIP CAMERĂ / ALT];
+  • Detalii noi: [DETALII];
+  • Motivul: [MOTIV].
+
+🎯 Opțiunile dumneavoastră:
+  1️⃣ Acceptați modificarea (eventual cu compensație oferită de operator);
+  2️⃣ Solicitați alt hotel de categorie similară / superioară;
+  3️⃣ Solicitați anularea fără penalități și rambursarea integrală (în cazurile prevăzute de lege).
+
+Vă rugăm să ne răspundeți în termen de [24–48h] pentru a acționa rapid în numele dumneavoastră.`,
+            ru: `Добрый день! 📣
+
+Сообщаем об изменении со стороны туроператора [НАЗВАНИЕ] по вашей брони № [НР]:
+
+🔸 Изменение:
+  • [СМЕНА ОТЕЛЯ / ВРЕМЕНИ РЕЙСА / ТИПА НОМЕРА / ДРУГОЕ];
+  • Новые данные: [ДЕТАЛИ];
+  • Причина: [ПРИЧИНА].
+
+🎯 Ваши варианты:
+  1️⃣ Принять изменение (возможна компенсация от оператора);
+  2️⃣ Запросить другой отель аналогичного / высшего уровня;
+  3️⃣ Запросить отмену без штрафа и полный возврат (в случаях, предусмотренных законом).
+
+Пожалуйста, ответьте в течение [24–48ч], чтобы мы могли оперативно действовать в ваших интересах.`
+          }
+        },
+        {
+          id: "probleme-hotel",
+          title: { ro: "Probleme la hotel — procedură", ru: "Проблемы в отеле — процедура" },
+          content: {
+            ro: `În cazul oricărei neconformități la hotel (curățenie, cameră, mâncare, comportament personal), urmați acești pași:
+
+1️⃣ Adresați-vă IMEDIAT la recepție și solicitați rezolvarea problemei;
+2️⃣ Dacă nu se rezolvă, cereți numărul reprezentantului turoperatorului în destinație (numărul e trecut pe voucher);
+3️⃣ Filmați / fotografiați problema ca dovadă;
+4️⃣ Solicitați un formular oficial de reclamație la recepție;
+5️⃣ Contactați-ne și pe noi la 📞 078 326 222 sau prin WhatsApp — intervenim în paralel cu operatorul.
+
+⚠️ Important: reclamațiile primite după întoarcerea din vacanță, fără dovezi scrise/foto făcute în timpul sejurului, sunt foarte greu de rezolvat. De aceea, acționați la fața locului!`,
+            ru: `В случае любых несоответствий в отеле (чистота, номер, питание, поведение персонала) действуйте так:
+
+1️⃣ СРАЗУ обратитесь на ресепшен и потребуйте решения проблемы;
+2️⃣ Если не решают — возьмите номер представителя туроператора (указан в ваучере);
+3️⃣ Сфотографируйте / снимите на видео проблему как доказательство;
+4️⃣ Запросите официальный бланк жалобы на ресепшен;
+5️⃣ Параллельно свяжитесь с нами: 📞 078 326 222 или WhatsApp — будем действовать вместе с оператором.
+
+⚠️ Важно: жалобы, поданные после возвращения, без фиксации во время отдыха, решить очень сложно. Действуйте на месте!`
+          }
+        },
+        {
+          id: "urgenta-medicala",
+          title: { ro: "Urgență medicală în vacanță", ru: "Медэкстренная ситуация на отдыхе" },
+          content: {
+            ro: `🏥 În caz de urgență medicală:
+
+1️⃣ Sunați IMEDIAT linia asistență 24/7 a asigurării (numărul e trecut pe polița medicală);
+2️⃣ Operatorul vă va direcționa către cea mai apropiată clinică / spital partener;
+3️⃣ Păstrați TOATE documentele: facturi, rețete, diagnostice, chitanțe;
+4️⃣ Nu achitați din propriul buzunar înainte de contactul cu asigurarea (dacă e posibil);
+5️⃣ Sunați-ne și pe noi: 📞 078 326 222 — vă sprijinim în comunicarea cu asigurarea.
+
+💡 Sfat: fotografiați polița de asigurare și păstrați-o în galerie, pentru acces rapid.
+
+🙏 Vă dorim sănătate și să nu aveți nevoie niciodată de aceste informații.`,
+            ru: `🏥 В случае медицинской экстренной ситуации:
+
+1️⃣ СРАЗУ звоните на линию 24/7 страховой (номер указан в полисе);
+2️⃣ Оператор направит вас в ближайшую партнёрскую клинику / больницу;
+3️⃣ Сохраняйте ВСЕ документы: счета, рецепты, диагнозы, чеки;
+4️⃣ Не платите из своего кармана до связи со страховой (по возможности);
+5️⃣ Позвоните и нам: 📞 078 326 222 — поможем в общении со страховой.
+
+💡 Совет: сфотографируйте полис и сохраните в галерее для быстрого доступа.
+
+🙏 Желаем здоровья и надеемся, что эта информация никогда не понадобится.`
+          }
+        },
+        {
+          id: "pierdere-bagaj",
+          title: { ro: "Pierdere / deteriorare bagaj", ru: "Потеря / повреждение багажа" },
+          content: {
+            ro: `🧳 Dacă bagajul nu a sosit sau e deteriorat:
+
+1️⃣ Mergeți IMEDIAT la ghișeul „Lost & Found" / „Baggage Claim" al companiei aeriene, ÎNAINTE de a părăsi zona bagajelor;
+2️⃣ Completați formularul PIR (Property Irregularity Report) — primiți un cod de referință;
+3️⃣ Păstrați bonul de îmbarcare (boarding pass) și eticheta bagajului;
+4️⃣ Fotografiați starea bagajului (dacă e deteriorat);
+5️⃣ Anunțați-ne la 📞 078 326 222 pentru asistență în procesarea despăgubirii.
+
+⏳ Termene:
+  • Bagaj întârziat: de obicei se livrează în 24–72h;
+  • Reclamație bagaj deteriorat: maxim 7 zile de la primire;
+  • Reclamație bagaj pierdut: maxim 21 zile de la sosire.`,
+            ru: `🧳 Если багаж не прибыл или повреждён:
+
+1️⃣ НЕМЕДЛЕННО обратитесь на стойку «Lost & Found» / «Baggage Claim» авиакомпании ДО того, как покинете зону багажа;
+2️⃣ Заполните форму PIR (Property Irregularity Report) — получите референс-номер;
+3️⃣ Сохраните посадочный талон и бирку багажа;
+4️⃣ Сфотографируйте состояние багажа (если повреждён);
+5️⃣ Сообщите нам: 📞 078 326 222 — поможем с оформлением компенсации.
+
+⏳ Сроки:
+  • Задержанный багаж: обычно доставляют в течение 24–72 часов;
+  • Жалоба на повреждение: максимум 7 дней с момента получения;
+  • Жалоба на утерю: максимум 21 день с даты прилёта.`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "acorduri",
+      icon: "📜",
+      title: { ro: "Acorduri & Regulamente interne", ru: "Соглашения и внутренние регламенты" },
+      nodes: [
+        {
+          id: "acord-date",
+          title: { ro: "Acord prelucrare date personale (GDPR)", ru: "Согласие на обработку персональных данных (GDPR)" },
+          content: {
+            ro: `ACORD DE PRELUCRARE A DATELOR CU CARACTER PERSONAL
+
+Subsemnatul/a, [Nume Prenume], pașaport/BI seria [    ] nr. [         ],
+îmi exprim acordul ca [DENUMIRE AGENȚIE], în calitate de operator de date cu caracter personal, să colecteze și să prelucreze datele mele personale (nume, prenume, data nașterii, număr pașaport, telefon, e-mail) în următoarele scopuri:
+
+✅ Rezervarea și organizarea serviciilor turistice;
+✅ Emiterea biletelor de avion, voucherelor și polițelor de asigurare;
+✅ Transmiterea datelor către turoperatori, hoteluri și autorități vamale/migrare;
+✅ Comunicarea pe parcursul prestării serviciului;
+✅ Marketing direct (oferte, promoții) — DOAR cu acord separat.
+
+📌 Drepturile mele sunt garantate conform Legii 133/2011 privind protecția datelor cu caracter personal din Republica Moldova și GDPR.
+
+Data: [__/__/____]
+Semnătura: ______________`,
+            ru: `СОГЛАСИЕ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ
+
+Я, нижеподписавшийся(-аяся), [ФИО], паспорт/УЛ серия [    ] № [         ],
+даю согласие [НАЗВАНИЕ АГЕНТСТВА], как оператору персональных данных, на сбор и обработку моих персональных данных (имя, фамилия, дата рождения, номер паспорта, телефон, e-mail) для следующих целей:
+
+✅ Бронирование и организация туристических услуг;
+✅ Оформление авиабилетов, ваучеров и страховых полисов;
+✅ Передача данных туроператорам, отелям и таможенным / миграционным органам;
+✅ Коммуникация на протяжении предоставления услуги;
+✅ Прямой маркетинг (предложения, акции) — ТОЛЬКО при отдельном согласии.
+
+📌 Мои права гарантируются Законом 133/2011 о защите персональных данных Республики Молдова и GDPR.
+
+Дата: [__/__/____]
+Подпись: ______________`
+          }
+        },
+        {
+          id: "bonus-regul",
+          title: { ro: "Regulament împărțire bonus (intern)", ru: "Регламент распределения бонуса (внутренний)" },
+          content: {
+            ro: `📋 REGULAMENT INTERN — ÎMPĂRȚIREA BONUSULUI PE OFERTĂ
+
+1. OFERTA RELEVANTĂ (definiție):
+   Oferta relevantă este oferta pe care turistul o rezervă efectiv.
+   Se consideră relevantă și:
+   • Oferta cu perioada modificată cu MAI PUȚIN de 14 zile față de ceea ce s-a trimis;
+   • Oferta cu tipul de cameră modificat;
+   • Oferta cu persoane adăugate / eliminate.
+
+2. NU se consideră că ai trimis oferta relevantă dacă:
+   • Rezervarea se face după MAI MULT de 14 zile de la transmiterea ofertei AND clientul alege o ofertă diferită;
+   • Ai verificat actualitatea ofertei transmise anterior și aceasta era depășită.
+
+3. REZERVARE PENTRU HOTEL TRIMIS CU PESTE 14 ZILE ÎNAINTE:
+   Dacă clientul revine după mai mult de 14 zile și alege EXACT același hotel trimis anterior:
+   → Bonus 100% agentului inițial (dacă istoricul conversației demonstrează clar că hotelul a fost propunerea sa).
+
+4. PRELUARE CERERI / OFERTĂ GĂSITĂ DE CLIENT PE SITE:
+   • Client preluat din CRM fără agent anterior → bonus integral agentului care finalizează;
+   • Client a găsit oferta singur pe site → bonus 70% agent care închide, 30% fond general;
+   • Client solicită un hotel specific de la început → 100% agent care închide.
+
+5. DISPUTE:
+   În caz de dezacord, decizia finală revine managerului de vânzări, pe baza istoricului CRM / chat.
+
+📅 Versiune: [v1.0 / DATA]
+✍️ Aprobat de: [NUME MANAGER]`,
+            ru: `📋 ВНУТРЕННИЙ РЕГЛАМЕНТ — РАСПРЕДЕЛЕНИЕ БОНУСА ПО ПРЕДЛОЖЕНИЯМ
+
+1. РЕЛЕВАНТНОЕ ПРЕДЛОЖЕНИЕ (определение):
+   Релевантное предложение — то, которое турист действительно забронировал.
+   Также считается релевантным:
+   • Предложение с изменённым сроком МЕНЕЕ чем на 14 дней от исходного;
+   • Предложение с изменённым типом номера;
+   • Предложение с добавленными / удалёнными туристами.
+
+2. НЕ считается, что агент отправил релевантное предложение, если:
+   • Бронирование происходит через БОЛЕЕ чем 14 дней с момента отправки И клиент выбрал другое предложение;
+   • Агент сверял актуальность и она была устаревшей.
+
+3. БРОНИРОВАНИЕ ОТЕЛЯ, ОТПРАВЛЕННОГО БОЛЕЕ 14 ДНЕЙ НАЗАД:
+   Если клиент возвращается более чем через 14 дней и выбирает ТОТ ЖЕ отель:
+   → 100% бонуса — первоначальному агенту (если история переписки чётко показывает его рекомендацию).
+
+4. ПЕРЕХВАТ ЗАЯВОК / ПРЕДЛОЖЕНИЕ НАЙДЕНО КЛИЕНТОМ НА САЙТЕ:
+   • Клиент без предыдущего агента в CRM → 100% агенту, закрывающему сделку;
+   • Клиент сам нашёл оффер на сайте → 70% закрывающему агенту, 30% в общий фонд;
+   • Клиент с самого начала просит конкретный отель → 100% закрывающему.
+
+5. СПОРНЫЕ СИТУАЦИИ:
+   В случае разногласий окончательное решение — за менеджером по продажам, на основе CRM и истории переписки.
+
+📅 Версия: [v1.0 / ДАТА]
+✍️ Утверждено: [ИМЯ МЕНЕДЖЕРА]`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "contract",
+      icon: "✍️",
+      title: { ro: "Contract & Informații precontractuale", ru: "Договор и преддоговорная информация" },
+      nodes: [
+        {
+          id: "info-precontract",
+          title: { ro: "Informații precontractuale (link)", ru: "Преддоговорная информация (ссылка)" },
+          content: {
+            ro: `Bună ziua! 😊
+
+Vă transmitem informațiile precontractuale aferente pachetului turistic selectat.
+Vă rugăm să le parcurgeți cu atenție și să ne confirmați printr-un mesaj scurt că ați luat cunoștință de ele și sunteți de acord cu conținutul.
+
+🔗 Link document:
+https://drive.google.com/file/d/1QMZRyzqjtpLs-SuolAN7jy17BRK14Hrr/view
+
+Mulțumim! 🙏`,
+            ru: `Добрый день! 😊
+
+Направляем вам преддоговорную информацию по выбранному туристическому пакету.
+Просим внимательно ознакомиться с ней и подтвердить коротким сообщением, что вы приняли её к сведению и согласны с её содержанием.
+
+🔗 Ссылка на документ:
+https://drive.google.com/file/d/1-HFvewFHX_pZk1PKcIRTZJAG0G9ZjiVp/view?usp=sharing
+
+Спасибо! 🙏`
+          }
+        },
+        {
+          id: "acord-contract",
+          title: { ro: "Acord semnare contract electronic", ru: "Согласие на электронное подписание договора" },
+          content: {
+            ro: `Vă rugăm să luați cunoștință de contractul de prestări servicii turistice.
+
+Dacă sunteți de acord cu toate prevederile contractuale, vă rugăm să confirmați printr-un mesaj scris cu următorul text:
+
+„Sunt de acord cu termenii și condițiile contractului și îmi exprim consimțământul pentru semnarea acestuia în formă electronică.”
+
+📌 Prin transmiterea acestui mesaj, contractul se va considera semnat și acceptat de ambele părți, având aceeași valoare juridică ca și semnătura olografă, conform prevederilor Codului Civil al Republicii Moldova și Legii nr. 91/2014 privind semnătura electronică și documentul electronic.
+
+🔗 Contractul este disponibil la link-ul: [Contract]`,
+            ru: `Пожалуйста, ознакомьтесь с договором на оказание туристических услуг.
+
+В случае согласия со всеми положениями договора, просим подтвердить это письменным сообщением со следующим текстом:
+
+«Я согласен(-на) с условиями договора и даю своё согласие на подписание его в электронной форме.»
+
+📌 Отправив данное сообщение, договор считается подписанным и принятым обеими сторонами, с той же юридической силой, как и собственноручная подпись, в соответствии с положениями Гражданского кодекса Республики Молдова и Закона № 91/2014 об электронной подписи и электронном документе.
+
+🔗 Договор доступен по ссылке: [Contract RU]`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "promotii",
+      icon: "🎁",
+      title: { ro: "Promoții & Fidelizare", ru: "Акции и программа лояльности" },
+      nodes: [
+        {
+          id: "golden-week",
+          title: { ro: "Golden Week 2.0 — Early Booking", ru: "Golden Week 2.0 — раннее бронирование" },
+          content: {
+            ro: `😊 Vă informăm că în această perioadă este activă promoția Golden Week 2.0 la ZEBRA TUR — ultima săptămână cu prețuri minime de la hoteluri pentru Vara 2026, înainte de scumpirile din februarie.
+
+👉 Avans doar 10%, restul se achită înainte de plecare.
+👉 Cu Promocod GOLDEN26 primiți o reducere suplimentară.
+
+✅ Promoție valabilă până pe 31.01.2026 (inclusiv).
+
+Doriți să vă pregătesc o ofertă personalizată cât prețurile sunt încă cele vechi? 🌴`,
+            ru: `😊 Сообщаем вам, что в данный период действует акция Golden Week 2.0 от ZEBRA TUR — последняя неделя с минимальными ценами от отелей на лето 2026 года, до повышения цен в феврале.
+
+👉 Аванс всего 10%, остальная сумма — перед вылетом.
+👉 А с промокодом GOLDEN26 вы получаете дополнительную скидку.
+
+✅ Акция действует до 31.01.2026 (включительно).
+
+Хотите, подберу персональное предложение, пока цены ещё прежние? 🌴`
+          }
+        },
+        {
+          id: "apel-fideli",
+          title: { ro: "Apel către turiștii fideli", ru: "Звонок постоянным туристам" },
+          content: {
+            ro: `☀️ Bună ziua!
+
+V-am sunat din partea Zebra Tur cu câteva noutăți foarte bune — o reducere specială pentru turiștii fideli și să vă întreb ceva scurt despre vacanța dumneavoastră 😊
+
+Când aveți câteva minute libere ca să vă contactez?`,
+            ru: `☀️ Добрый день!
+
+Вам звонили из Zebra Tur с несколькими отличными новостями — специальная скидка для постоянных туристов, и хотелось задать пару коротких вопросов о вашем отпуске 😊
+
+Когда у вас будет пара свободных минут, чтобы я вам перезвонил(-а)?`
+          }
+        },
+        {
+          id: "grup-privat",
+          title: { ro: "Grup privat — Voucher 1000 lei", ru: "Закрытая группа — ваучер 1000 лей" },
+          content: {
+            ro: `🌞 Mulțumim mult pentru discuție!
+
+Aici este linkul despre care am vorbit:
+👉 https://zebratur.md/thx
+
+Prin acest link puteți intra în grupurile private Zebra Tur, create special pentru turiștii care au călătorit cu noi 💛
+
+În grup veți găsi:
+— Voucherul de 1000 lei reducere, valabil până la 31 ianuarie 2026;
+— Ofertele Early Booking pentru 2026 (cu avans doar 1000 lei);
+— Promoții și tombole exclusive disponibile doar pentru turiștii fideli.
+
+Accesați linkul și intrați în grupul care vă este mai comod (Viber sau Telegram) 👉 https://zebratur.md/thx`,
+            ru: `🌞 Большое спасибо за разговор!
+
+Вот ссылка, о которой мы говорили:
+👉 https://zebratur.md/thx
+
+По этой ссылке вы попадёте в закрытые группы Zebra Tur, созданные специально для туристов, которые уже путешествовали с нами 💛
+
+В группе вы найдёте:
+— Ваучер на 1000 леев скидки, действительный до 31 января 2026;
+— Предложения Early Booking на 2026 год (с авансом всего 1000 леев);
+— Акции и розыгрыши, доступные только постоянным туристам.
+
+Перейдите по ссылке и зайдите в удобную для вас группу (Viber или Telegram) 👉 https://zebratur.md/thx`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "plati-bancare",
+      icon: "🏦",
+      title: { ro: "Instrucțiuni de plată", ru: "Инструкции по оплате" },
+      nodes: [
+        {
+          id: "plata-maib",
+          title: { ro: "MAIB — pas cu pas", ru: "MAIB — пошагово" },
+          content: {
+            ro: `📲 Instrucțiune de achitare prin aplicația MAIB:
+
+1. Accesați aplicația mobilă MAIB;
+2. Accesați „Plăți” (colțul stâng — jos);
+3. Accesați din nou fereastra „PLĂȚI” de la plăți și transferuri și apăsați bara de căutare, unde scrieți „Zebra Tour”;
+4. Apăsați pe Zebra Tour — se va deschide pagina unde trebuie să indicați suma, numele și prenumele, codul fiscal al dumneavoastră;
+5. Câmpurile goale le completați astfel:
+   ▸ N.P.P. — Numele și Prenumele dumneavoastră;
+   ▸ COD FISCAL — codul personal IDNP (13 cifre);
+   ▸ Sursă — selectați cardul de pe care veți achita și continuați;
+6. Completați spațiile goale și continuați;
+7. Se va deschide pagina cu totalizare (sursa de achitare, N.P.P., Codul Fiscal, suma, suma totală spre achitare) — VERIFICAȚI;
+8. După verificare, faceți click pe „CONFIRM”;
+9. Descărcați confirmarea de plată sau faceți screenshot și transmiteți-ne.`,
+            ru: `📲 Инструкция по оплате через приложение MAIB:
+
+1. Откройте мобильное приложение MAIB;
+2. Перейдите в «Платежи» (левый нижний угол);
+3. Снова нажмите на «ПЛАТЕЖИ» в разделе платежей и переводов и в поисковой строке введите «Zebra Tour»;
+4. Нажмите на Zebra Tour — откроется страница, где нужно указать сумму, имя и фамилию, ваш фискальный код;
+5. Пустые поля заполните так:
+   ▸ N.P.P. — ваши Имя и Фамилия;
+   ▸ COD FISCAL — ваш личный IDNP (13 цифр);
+   ▸ Источник — выберите карту для оплаты и продолжите;
+6. Заполните пустые поля и продолжите;
+7. Откроется страница с итогами (карта, ФИО, фискальный код, сумма и итоговая сумма) — ПРОВЕРЬТЕ;
+8. После проверки нажмите «CONFIRM»;
+9. Скачайте подтверждение платежа или сделайте скриншот и отправьте нам.`
+          }
+        },
+        {
+          id: "plata-victoriabank",
+          title: { ro: "Victoriabank — pas cu pas", ru: "Victoriabank — пошагово" },
+          content: {
+            ro: `📲 Instrucțiune de achitare prin aplicația Victoriabank:
+
+1. Accesați secțiunea „Plăți și Transferuri”;
+2. Alegeți „Către altcineva”;
+3. Selectați „Transfer în MDL”;
+4. Completați câmpurile:
+   — Alegeți cardul de pe care faceți transferul;
+   — Contul beneficiarului: MD16AG000000022515285856
+   — Nume, prenume beneficiar: Zebra Tour SRL
+   — IDNO beneficiarului: 1023600001430
+   — Suma transferului (puteți scădea 20 lei, astfel taxa de transfer rămâne din contul nostru);
+   — Destinația plății: Pachet turistic (perioada turului, ex.: 10.06.2024–16.06.2024)
+   — Statutul beneficiarului: Rezident
+   — Tipul transferului: Transfer Urgent;
+5. Bifați acordul cu Termenii și Condițiile Victoriabank;
+6. Apăsați „Continuare”;
+7. Descărcați confirmarea de plată și transmiteți-o nouă.`,
+            ru: `📲 Инструкция по оплате через приложение Victoriabank:
+
+1. Откройте раздел «Платежи и переводы»;
+2. Выберите «Другому лицу»;
+3. Выберите «Перевод в MDL»;
+4. Заполните поля:
+   — Выберите карту, с которой делаете перевод;
+   — Счёт получателя: MD16AG000000022515285856
+   — Имя, фамилия получателя: Zebra Tour SRL
+   — IDNO получателя: 1023600001430
+   — Сумма перевода (можно вычесть 20 леев, чтобы комиссия за перевод была за наш счёт);
+   — Назначение платежа: Турпакет (период тура, напр.: 10.06.2024–16.06.2024)
+   — Статус получателя: Резидент;
+   — Тип перевода: Срочный перевод;
+5. Поставьте галочку согласия с Условиями Victoriabank;
+6. Нажмите «Продолжить»;
+7. Скачайте подтверждение оплаты и отправьте нам.`
+          }
+        },
+        {
+          id: "plata-micb",
+          title: { ro: "Moldindconbank — pas cu pas", ru: "Moldindconbank — пошагово" },
+          content: {
+            ro: `📲 Instrucțiune de achitare prin aplicația Moldindconbank (MICB):
+
+1. Accesați secțiunea „Plăți și Transferuri”;
+2. Alegeți „Transfer către IBAN (pers. juridică)” ❗;
+3. Completați câmpurile:
+   — Beneficiar: Zebra Tour SRL
+   — Codul fiscal al beneficiarului: 1023600001430
+   — Codul IBAN al beneficiarului: MD16AG000000022515285856
+   — Informație adițională: Pachet turistic (perioada turului, ex.: 10.06.2024–16.06.2024)
+   — Regim: Urgent
+   — Suma spre achitare (puteți scădea 20 lei, astfel taxa de transfer rămâne din contul nostru);
+4. Bifați acordul cu Termenii și Condițiile Moldindconbank;
+5. Apăsați „Continuare”;
+6. Descărcați confirmarea de plată și transmiteți-o nouă.`,
+            ru: `📲 Инструкция по оплате через приложение Moldindconbank (MICB):
+
+1. Откройте раздел «Платежи и переводы»;
+2. Выберите «Перевод на IBAN (юрид. лицо)» ❗;
+3. Заполните поля:
+   — Получатель: Zebra Tour SRL
+   — Фискальный код получателя: 1023600001430
+   — IBAN получателя: MD16AG000000022515285856
+   — Дополнительная информация: Турпакет (период тура, напр.: 10.06.2024–16.06.2024)
+   — Режим: Срочный
+   — Сумма к оплате (можно вычесть 20 леев, чтобы комиссия за перевод была за наш счёт);
+4. Поставьте галочку согласия с Условиями Moldindconbank;
+5. Нажмите «Продолжить»;
+6. Скачайте подтверждение оплаты и отправьте нам.`
+          }
+        },
+        {
+          id: "date-bancare",
+          title: { ro: "Date bancare — Zebra Tour SRL", ru: "Банковские реквизиты — Zebra Tour SRL" },
+          content: {
+            ro: `🏦 DATE BANCARE — ZEBRA TOUR S.R.L.
+
+Beneficiar: ZEBRA TOUR S.R.L.
+Cod fiscal: 1023600001430
+Banca beneficiarului: BC „MAIB” S.A., sucursala „Constantin Tănase”
+Cod BIC: AGRNMD2X493
+Cod IBAN: MD16AG000000022515285856
+Valuta contului: MDL
+
+Adresa juridică: mun. Chișinău, Codru, str. Sf. Nicolai 35, ap. (of.) 16
+Administrator: Verdis Ianis
+Telefon: 069 096 693`,
+            ru: `🏦 БАНКОВСКИЕ РЕКВИЗИТЫ — ZEBRA TOUR S.R.L.
+
+Получатель: ZEBRA TOUR S.R.L.
+Фискальный код: 1023600001430
+Банк получателя: BC „MAIB” S.A., филиал „Constantin Tănase”
+BIC: AGRNMD2X493
+IBAN: MD16AG000000022515285856
+Валюта счёта: MDL
+
+Юридический адрес: мун. Кишинёв, Кодру, ул. Св. Николая 35, кв. (оф.) 16
+Администратор: Verdis Ianis
+Телефон: 069 096 693`
+          }
+        },
+        {
+          id: "card-personal",
+          title: { ro: "Card personal administrator", ru: "Личная карта администратора" },
+          content: {
+            ro: `💳 Card personal (pentru avansuri mici / plăți rapide):
+
+5188 9403 3616 2706
+Ianis Verdis
+
+📌 Vă rugăm să indicați în detaliile transferului numele turistului și perioada rezervării (ex.: „Ionescu Maria — 10.06.2025”).
+După transfer, transmiteți-ne confirmarea de plată. Mulțumim! 🙏`,
+            ru: `💳 Личная карта (для небольших авансов / быстрых платежей):
+
+5188 9403 3616 2706
+Ianis Verdis
+
+📌 Пожалуйста, укажите в деталях перевода имя туриста и даты брони (напр.: «Ionescu Maria — 10.06.2025»).
+После перевода пришлите, пожалуйста, подтверждение оплаты. Спасибо! 🙏`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "oferta-continut",
+      icon: "📦",
+      title: { ro: "Oferta & Ce include pachetul", ru: "Оферта и что включено в пакет" },
+      nodes: [
+        {
+          id: "include-auto",
+          title: { ro: "Pachet cu transport auto", ru: "Пакет с автобусом" },
+          content: {
+            ro: `➕ OFERTA INCLUDE:
+
+🚌 Transport Chișinău → Hotel → Chișinău
+🏨 Cazare + 🍽️ alimentație
+🩺 Asigurare medicală de călătorie
+ℹ️ Ghid turistic + sfaturi de călătorie
+🆘 Serviciu de asistență 24/7`,
+            ru: `➕ ПАКЕТ ВКЛЮЧАЕТ:
+
+🚌 Транспорт Кишинёв → отель → Кишинёв
+🏨 Проживание + 🍽️ питание
+🩺 Медицинскую туристическую страховку
+ℹ️ Гида и советы по путешествию
+🆘 Службу помощи 24/7`
+          }
+        },
+        {
+          id: "include-zbor",
+          title: { ro: "Pachet cu zbor avion", ru: "Пакет с авиаперелётом" },
+          content: {
+            ro: `➕ OFERTA INCLUDE:
+
+✈️ Zbor tur-retur din Chișinău
+🚌 Transfer Aeroport → Hotel → Aeroport
+🏨 Cazare + 🍽️ alimentație
+🩺 Asigurare medicală de călătorie
+ℹ️ Ghid turistic + sfaturi de călătorie
+🆘 Serviciu de asistență 24/7`,
+            ru: `➕ ПАКЕТ ВКЛЮЧАЕТ:
+
+✈️ Авиаперелёт туда-обратно из Кишинёва
+🚌 Трансфер Аэропорт → Отель → Аэропорт
+🏨 Проживание + 🍽️ питание
+🩺 Медицинскую туристическую страховку
+ℹ️ Гида и советы по путешествию
+🆘 Службу помощи 24/7`
+          }
+        },
+        {
+          id: "explicatie-buget",
+          title: { ro: "De ce avem nevoie de buget + site", ru: "Зачем нужен бюджет + сайт" },
+          content: {
+            ro: `Nu putem trimite toate ofertele existente — sunt mii, iar fiecare persoană caută altceva: un anumit tip de hotel, un preț, o locație sau condiții speciale.
+
+🎯 De aceea avem nevoie de un buget aproximativ — nu ca să vă limităm opțiunile, ci ca să alegem direct ce vi se potrivește și să nu pierdem timp cu oferte care nu corespund.
+
+Dacă doriți doar să vedeți ce opțiuni există, puteți intra oricând pe site-ul nostru:
+👉 https://zebratur.md/offers
+
+Acolo puteți alege ușor:
+  • destinația;
+  • perioada;
+  • numărul de stele al hotelului;
+  • tipul de alimentație;
+  • numărul de persoane.
+
+Sistemul vă arată imediat toate variantele disponibile, cu poze și descrieri. 🌴`,
+            ru: `Мы не можем отправить все существующие предложения — их тысячи, и каждый ищет своё: определённый тип отеля, цену, расположение или особые условия.
+
+🎯 Именно поэтому нам нужен примерный бюджет — не чтобы ограничить вас, а чтобы сразу подобрать то, что действительно вам подойдёт, и не терять время на неподходящие варианты.
+
+Если вы просто хотите посмотреть, какие есть варианты, в любой момент заходите на наш сайт:
+👉 https://zebratur.md/offers
+
+Там легко выбрать:
+  • направление;
+  • даты;
+  • количество звёзд отеля;
+  • тип питания;
+  • количество человек.
+
+Система сразу покажет все доступные предложения — с фотографиями и описанием. 🌴`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "prim-contact",
+      icon: "👋",
+      title: { ro: "Prim contact & Calificare client", ru: "Первый контакт и квалификация клиента" },
+      nodes: [
+        {
+          id: "salut-cerere-info",
+          title: { ro: "Salut + întrebări de calificare", ru: "Приветствие + вопросы квалификации" },
+          content: {
+            ro: `Bună ziua! 😊
+
+Suntem bucuroși să vă organizăm următoarea călătorie. Pentru a pregăti cele mai potrivite oferte, vă rugăm să ne spuneți:
+
+✈️ 1. Unde doriți să călătoriți?
+👥 2. Câți turiști sunteți? Dacă sunt copii, care este vârsta lor?
+📅 3. Pe ce dată și pentru câte zile doriți să plecați?
+💰 4. Care este bugetul orientativ planificat?
+
+Pe baza acestor detalii, vă selectăm ofertele potrivite în cel mai scurt timp. 🌍`,
+            ru: `Здравствуйте! 😊
+
+Мы рады организовать ваше следующее путешествие. Чтобы подобрать самые подходящие предложения, подскажите, пожалуйста:
+
+✈️ 1. Куда вы хотите поехать?
+👥 2. Сколько вас человек? Если есть дети — их возраст?
+📅 3. С какого числа и на сколько дней планируете поездку?
+💰 4. Какой бюджет вы предусмотрели?
+
+На основе этих деталей мы в кратчайшие сроки подберём для вас подходящие варианты. 🌍`
+          }
+        },
+        {
+          id: "multumire-cerere",
+          title: { ro: "Mulțumire la primirea cererii", ru: "Благодарность при получении заявки" },
+          content: {
+            ro: `Vă mulțumesc! 🙏
+
+Voi lua în considerare toate detaliile menționate și în scurt timp vă selectez și vă transmit cele mai bune oferte.
+
+💡 Dacă aveți careva cerințe speciale față de hotel sau odihnă (piscină pentru copii, plajă cu nisip, aproape de restaurante, cameră cu vedere la mare, etc.), vă rog numaidecât să-mi spuneți, ca să țin cont de ele!`,
+            ru: `Благодарю вас! 🙏
+
+Учту все упомянутые детали и в кратчайшие сроки подберу и пришлю вам лучшие предложения.
+
+💡 Если у вас есть какие-либо особые пожелания к отелю или отдыху (бассейн для детей, песчаный пляж, близость ресторанов, номер с видом на море и т. д.), обязательно сообщите мне, чтобы я их учёл(-ла)!`
+          }
+        },
+        {
+          id: "cerere-apel",
+          title: { ro: "Cerere apel scurt (2–3 min)", ru: "Просьба о коротком звонке (2–3 мин)" },
+          content: {
+            ro: `Pentru a vă putea selecta cele mai bune opțiuni personalizate, aș avea nevoie de un scurt apel telefonic de 2–3 minute, ca să înțeleg exact ce căutați. 📞
+
+Puteți lăsa numărul dumneavoastră de telefon, iar eu vă sun imediat, la ora care vă convine.`,
+            ru: `Чтобы подобрать для вас самые подходящие персональные варианты, мне понадобится короткий звонок на 2–3 минуты — чтобы точно понять, что именно вы ищете. 📞
+
+Оставьте, пожалуйста, ваш номер телефона — я перезвоню в удобное для вас время.`
+          }
+        },
+        {
+          id: "cerere-raspuns",
+          title: { ro: "Cerere răspuns la toate întrebările", ru: "Просьба ответить на все вопросы" },
+          content: {
+            ro: `Pentru a vă putea pregăti ofertele potrivite, avem nevoie să răspundeți la toate întrebările transmise mai devreme. 🙏
+
+Fără aceste detalii, din păcate, nu putem selecta variantele care vi se potrivesc cel mai bine.
+
+Vă mulțumim pentru înțelegere! 😊`,
+            ru: `Чтобы мы смогли подготовить подходящие предложения, просим ответить на все вопросы, отправленные ранее. 🙏
+
+К сожалению, без этих деталей мы не можем подобрать варианты, которые подойдут именно вам.
+
+Благодарим за понимание! 😊`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "recenzii",
+      icon: "⭐",
+      title: { ro: "Recenzii & Feedback", ru: "Отзывы и обратная связь" },
+      nodes: [
+        {
+          id: "multumire-5stele",
+          title: { ro: "Mulțumire pentru nota 5★", ru: "Благодарность за оценку 5★" },
+          content: {
+            ro: `Mulțumim mult pentru nota 5! ⭐⭐⭐⭐⭐
+
+Ne bucurăm enorm că ați fost mulțumit și promitem să facem vacanțele dumneavoastră viitoare și mai plăcute.
+
+🎁 Ca turist Zebra Tur, veți beneficia mereu de reduceri speciale la următoarele călătorii.
+
+🙏 Ne-ar ajuta mult dacă ne lăsați o recenzie și pe Google — pentru aceasta, apăsați pe linkul de mai jos:
+👉 https://g.page/r/CZplCVIXAnXjEAE/review
+
+💛 Mulțumim din suflet!`,
+            ru: `Огромное спасибо за оценку 5! ⭐⭐⭐⭐⭐
+
+Мы очень рады, что вы остались довольны, и обещаем делать ваши будущие поездки ещё приятнее.
+
+🎁 Как постоянный турист Zebra Tur, вы всегда будете получать специальные скидки на следующие путешествия.
+
+🙏 Будем очень признательны, если вы оставите отзыв и в Google — для этого перейдите по ссылке:
+👉 https://g.page/r/CZplCVIXAnXjEAE/review
+
+💛 Благодарим от всей души!`
+          }
+        },
+        {
+          id: "raspuns-feedback",
+          title: { ro: "Răspuns la notă mai mică / feedback", ru: "Ответ на низкую оценку / обратная связь" },
+          content: {
+            ro: `Vă mulțumim pentru răspuns! 🙏
+
+Ne-ar ajuta mult dacă ne-ați spune ce am putea îmbunătăți pentru a vă oferi o experiență perfectă la următoarea călătorie. Părerea dumneavoastră sinceră ne este extrem de valoroasă.
+
+🎁 Vom ține cont de feedback-ul dumneavoastră, iar ca turist repetat, la următoarele vacanțe cu Zebra Tur veți avea mereu reduceri speciale.
+
+Vă mulțumim că ne ajutați să creștem! 💛`,
+            ru: `Благодарим за ответ! 🙏
+
+Нам было бы очень полезно узнать, что именно мы могли бы улучшить, чтобы подарить вам идеальный опыт в следующем путешествии. Ваше искреннее мнение для нас крайне ценно.
+
+🎁 Мы обязательно учтём ваш отзыв, а при следующих поездках с Zebra Tur вас, как постоянного туриста, всегда будут ждать специальные скидки.
+
+Спасибо, что помогаете нам становиться лучше! 💛`
+          }
+        },
+        {
+          id: "multumire-experienta",
+          title: { ro: "Mulțumire pentru experiența Zebratur", ru: "Благодарность за опыт с Zebratur" },
+          content: {
+            ro: `Ne bucură enorm să aflăm că ați avut o experiență plăcută cu Zebratur! 🌴
+
+Misiunea noastră este să vă oferim vacanțe memorabile și să ne asigurăm că plecați acasă cu cele mai frumoase amintiri.
+
+📝 Dacă doriți și aveți câteva minute, ne-ar face o deosebită plăcere să lăsați o scurtă recenzie pe Google sau Facebook, sau să împărtășiți momentele dumneavoastră preferate din vacanță.
+
+Feedback-ul dumneavoastră pozitiv ne ajută să continuăm să oferim servicii de calitate și să ne îmbunătățim constant.
+👉 https://g.page/r/CZplCVIXAnXjEAE/review
+
+Vă mulțumim că ați ales Zebratur pentru vacanța dumneavoastră și sperăm să avem plăcerea de a vă ajuta să planificați următoarea călătorie — cu reduceri speciale, desigur! 🎁
+
+Cu respect,
+Echipa Zebratur 💛`,
+            ru: `Нам очень приятно узнать, что у вас остались хорошие впечатления от Zebratur! 🌴
+
+Наша миссия — дарить вам незабываемые отпуска и гарантировать, что вы возвращаетесь домой с самыми тёплыми воспоминаниями.
+
+📝 Если у вас есть время и желание, будем безмерно признательны за короткий отзыв в Google или Facebook, а также если поделитесь любимыми моментами отдыха.
+
+Ваш положительный отзыв помогает нам продолжать предоставлять качественный сервис и становиться лучше.
+👉 https://g.page/r/CZplCVIXAnXjEAE/review
+
+Спасибо, что выбрали Zebratur для вашего отпуска, и надеемся помочь вам запланировать следующее путешествие — разумеется, со специальными скидками! 🎁
+
+С уважением,
+Команда Zebratur 💛`
+          }
+        }
+      ]
+    },
+
+    {
+      id: "contact-agentie",
+      icon: "📍",
+      title: { ro: "Contact & Info agenție", ru: "Контакты и информация об агентстве" },
+      nodes: [
+        {
+          id: "adresa-program",
+          title: { ro: "Adresa & programul de lucru", ru: "Адрес и часы работы" },
+          content: {
+            ro: `🏢 Ne aflăm în Chișinău, pe str. Ismail 86.
+
+⏰ Program de lucru — în fiecare zi:
+  • Luni–Vineri: 08:30 – 19:00
+  • Sâmbătă: 09:00 – 18:00
+  • Duminică: 09:00 – 18:00
+
+📍 Locația pe hartă:
+http://zebratur.md/contacte
+
+Vă așteptăm cu drag! 💛`,
+            ru: `🏢 Мы находимся в Кишинёве, на ул. Измаил 86.
+
+⏰ Часы работы — каждый день:
+  • Пн–Пт: 08:30 – 19:00
+  • Сб: 09:00 – 18:00
+  • Вс: 09:00 – 18:00
+
+📍 Местоположение на карте:
+http://zebratur.md/contacte
+
+Будем рады видеть вас! 💛`
+          }
+        },
+        {
+          id: "cu-placere",
+          title: { ro: "Cu plăcere (răspuns scurt)", ru: "С удовольствием (короткий ответ)" },
+          content: {
+            ro: `Cu plăcere! 💛
+
+Suntem întotdeauna dispuși să vă răspundem la orice întrebări și să vă furnizăm toate detaliile suplimentare de care aveți nevoie. 🏝️✨`,
+            ru: `С удовольствием! 💛
+
+Мы всегда готовы ответить на любые ваши вопросы и предоставить все дополнительные детали, которые могут вам понадобиться. 🏝️✨`
+          }
+        }
+      ]
+    }
+  ]
+};
+
+// ============================================================
+// STATE & RENDERING
+// ============================================================
+let currentLang = "ro";
+
+function render() {
+  const t = DATA.ui[currentLang];
+  document.getElementById("subtitle").textContent = t.subtitle;
+  document.getElementById("expandAll").textContent = t.expand;
+  document.getElementById("collapseAll").textContent = t.collapse;
+  document.getElementById("search").placeholder = t.search;
+  document.getElementById("toast").textContent = t.toast;
+
+  const mindmap = document.getElementById("mindmap");
+  mindmap.innerHTML = "";
+
+  DATA.categories.forEach(cat => {
+    const branch = document.createElement("div");
+    branch.className = "branch";
+    branch.dataset.id = cat.id;
+    branch.innerHTML = `
+      <div class="branch-header">
+        <span><span class="icon">${cat.icon}</span>${cat.title[currentLang]}</span>
+        <span class="toggle">▼</span>
+      </div>
+      <div class="branch-body"></div>
+    `;
+    const body = branch.querySelector(".branch-body");
+    cat.nodes.forEach(node => {
+      const nodeEl = document.createElement("div");
+      nodeEl.className = "node";
+      nodeEl.dataset.id = node.id;
+      nodeEl.innerHTML = `
+        <div class="node-title">
+          <span>📄 ${node.title[currentLang]}</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="node-content">
+          <pre>${escapeHtml(node.content[currentLang])}</pre>
+          <button class="copy-btn" data-text="${encodeURIComponent(node.content[currentLang])}">${t.copy}</button>
+        </div>
+      `;
+      body.appendChild(nodeEl);
+    });
+    mindmap.appendChild(branch);
+  });
+
+  attachListeners();
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+}
+
+function attachListeners() {
+  document.querySelectorAll(".branch-header").forEach(h => {
+    h.addEventListener("click", () => h.parentElement.classList.toggle("open"));
+  });
+  document.querySelectorAll(".node-title").forEach(t => {
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
+      t.parentElement.classList.toggle("open");
+    });
+  });
+  document.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const text = decodeURIComponent(btn.dataset.text);
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = DATA.ui[currentLang].copied;
+        btn.classList.add("copied");
+        showToast();
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove("copied");
+        }, 1800);
+      } catch (err) {
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast();
+      }
+    });
+  });
+}
+
+function showToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+// Language switcher
+document.querySelectorAll(".lang-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentLang = btn.dataset.lang;
+    document.documentElement.lang = currentLang;
+    render();
+  });
+});
+
+// Expand / collapse all
+document.getElementById("expandAll").addEventListener("click", () => {
+  document.querySelectorAll(".branch").forEach(b => b.classList.add("open"));
+  document.querySelectorAll(".node").forEach(n => n.classList.add("open"));
+});
+document.getElementById("collapseAll").addEventListener("click", () => {
+  document.querySelectorAll(".branch").forEach(b => b.classList.remove("open"));
+  document.querySelectorAll(".node").forEach(n => n.classList.remove("open"));
+});
+
+// Search
+document.getElementById("search").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) {
+    document.querySelectorAll(".branch, .node").forEach(el => el.style.display = "");
+    return;
+  }
+  document.querySelectorAll(".branch").forEach(branch => {
+    let hasMatch = false;
+    branch.querySelectorAll(".node").forEach(node => {
+      const text = node.textContent.toLowerCase();
+      if (text.includes(q)) {
+        node.style.display = "";
+        node.classList.add("open");
+        hasMatch = true;
+      } else {
+        node.style.display = "none";
+      }
+    });
+    if (hasMatch) {
+      branch.style.display = "";
+      branch.classList.add("open");
+    } else {
+      branch.style.display = "none";
+    }
+  });
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
